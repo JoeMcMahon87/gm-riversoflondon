@@ -1,17 +1,14 @@
 import OBR, { Metadata } from "@owlbear-rodeo/sdk";
 import { ID, itemMetadataKey, metadataKey, version } from "../helper/variables.ts";
-import { DICE_ROLLER, GMDMetadata, ItemChanges, RoomMetadata, SceneMetadata } from "../helper/types.ts";
+import { ItemChanges, RoLMetadata, RoomMetadata, SceneMetadata } from "../helper/types.ts";
 import { v4 as uuidv4 } from "uuid";
 import { getAttachedItems, initToken } from "../helper/helpers.ts";
-import { setupDddice } from "./dddice.ts";
 import { updateItems } from "../helper/obrHelper.ts";
 import {
     saveOrChangeAttachments,
     updateAttachmentChanges,
     updateAttachmentVisibility,
 } from "../helper/attachmentHelpers.ts";
-import { isNull, isUndefined } from "lodash";
-import { setupDicePlus } from "./diceplus.ts";
 
 /**
  * All character items get the default values for the HpTrackeMetadata.
@@ -19,13 +16,13 @@ import { setupDicePlus } from "./diceplus.ts";
  */
 const initItems = async () => {
     const tokens = await OBR.scene.items.getItems(
-        (item) => itemMetadataKey in item.metadata && (item.metadata[itemMetadataKey] as GMDMetadata).active,
+        (item) => itemMetadataKey in item.metadata && (item.metadata[itemMetadataKey] as RoLMetadata).active,
     );
 
     const changes = new Map<string, ItemChanges>();
 
     for (const token of tokens) {
-        const data = token.metadata[itemMetadataKey] as GMDMetadata;
+        const data = token.metadata[itemMetadataKey] as RoLMetadata;
         const attachments = await getAttachedItems(token.id, []);
 
         if (data.showOnMap) {
@@ -34,7 +31,7 @@ const initItems = async () => {
     }
 
     await updateAttachmentChanges(changes);
-    console.info("GM's Daggerheart - Token initialization done");
+    console.info("GM's Rivers of London - Token initialization done");
 };
 
 const initRoom = async () => {
@@ -43,23 +40,9 @@ const initRoom = async () => {
     if (!(metadataKey in metadata)) {
         const roomData: RoomMetadata = {
             ignoreUpdateNotification: false,
-            diceRoller: DICE_ROLLER.DDDICE,
-            countUp: false,
-            fear: 0,
+            revealSuccessLevel: true,
         };
         ownMetadata[metadataKey] = roomData;
-    } else {
-        const roomData = metadata[metadataKey] as RoomMetadata;
-        if (isNull(roomData.diceRoller) || isUndefined(roomData.diceRoller)) {
-            // @ts-ignore disableDiceRoller is the legacy option
-            if (roomData.disableDiceRoller) {
-                roomData.diceRoller = DICE_ROLLER.SIMPLE;
-            }
-            roomData.diceRoller = DICE_ROLLER.DDDICE;
-        }
-        if (isUndefined(roomData.countUp)) {
-            roomData.countUp = false;
-        }
     }
     await OBR.room.setMetadata(ownMetadata);
 };
@@ -100,7 +83,7 @@ const setupContextMenu = async () => {
         icons: [
             {
                 icon: "/iconPopover.svg",
-                label: "GM's Daggerheart",
+                label: "GM's Rivers of London",
                 filter: {
                     some: [{ key: ["metadata", `${itemMetadataKey}`, "active"], value: true }],
                     roles: ["GM"],
@@ -108,7 +91,7 @@ const setupContextMenu = async () => {
             },
             {
                 icon: "/iconPopover.svg",
-                label: "GM's Daggerheart",
+                label: "GM's Rivers of London",
                 filter: {
                     every: [
                         { key: ["metadata", `${itemMetadataKey}`, "active"], value: true, coordinator: "&&" },
@@ -132,7 +115,7 @@ const setupContextMenu = async () => {
         icons: [
             {
                 icon: "/iconOff.svg",
-                label: "Remove from Grimoire",
+                label: "Remove from tracker",
                 filter: {
                     some: [{ key: ["metadata", `${itemMetadataKey}`, "active"], value: true }],
                     roles: ["GM"],
@@ -141,14 +124,14 @@ const setupContextMenu = async () => {
         ],
         onClick: async (context) => {
             const contextItems = context.items.filter(
-                (i) => itemMetadataKey in i.metadata && (i.metadata[itemMetadataKey] as GMDMetadata).active,
+                (i) => itemMetadataKey in i.metadata && (i.metadata[itemMetadataKey] as RoLMetadata).active,
             );
             await updateItems(
                 contextItems.map((i) => i.id),
                 (items) => {
                     items.forEach((item) => {
                         if (itemMetadataKey in item.metadata) {
-                            const data = item.metadata[itemMetadataKey] as GMDMetadata;
+                            const data = item.metadata[itemMetadataKey] as RoLMetadata;
                             item.metadata[itemMetadataKey] = { ...data, active: false };
                         }
                     });
@@ -158,11 +141,11 @@ const setupContextMenu = async () => {
     });
 
     await OBR.contextMenu.create({
-        id: `${ID}/add-to-grimoire`,
+        id: `${ID}/add-to-tracker`,
         icons: [
             {
                 icon: "/icon.svg",
-                label: "Add to Grimoire",
+                label: "Add to tracker",
                 filter: {
                     every: [
                         { key: ["metadata", `${itemMetadataKey}`], value: undefined, coordinator: "||" },
@@ -197,11 +180,11 @@ const setupContextMenu = async () => {
     });
 
     await OBR.contextMenu.create({
-        id: `${ID}/add-prop-to-grimoire`,
+        id: `${ID}/add-prop-to-tracker`,
         icons: [
             {
                 icon: "/icon.svg",
-                label: "Add to Grimoire",
+                label: "Add to tracker",
                 filter: {
                     every: [
                         { key: ["metadata", `${itemMetadataKey}`], value: undefined, coordinator: "||" },
@@ -244,17 +227,17 @@ const sceneReady = async () => {
     try {
         await migrations();
     } catch (e) {
-        console.warn("GM's Daggerheart - Error while running migrations", e);
+        console.warn("GM's Rivers of London - Error while running migrations", e);
     }
     try {
         await initItems();
     } catch (e) {
-        console.warn("GM's Daggerheart - Error while initializing items", e);
+        console.warn("GM's Rivers of London - Error while initializing items", e);
     }
     try {
         await initScene();
     } catch (e) {
-        console.warn("GM's Daggerheart - Error while initializing Scene", e);
+        console.warn("GM's Rivers of London - Error while initializing Scene", e);
     }
 };
 
@@ -262,7 +245,7 @@ const initTokens = async () => {
     // Triggers everytime any item is changed
     OBR.scene.items.onChange(async (items) => {
         const tokens = items.filter((item) => {
-            return itemMetadataKey in item.metadata && (item.metadata[itemMetadataKey] as GMDMetadata).active;
+            return itemMetadataKey in item.metadata && (item.metadata[itemMetadataKey] as RoLMetadata).active;
         });
         await updateAttachmentVisibility(tokens);
     });
@@ -271,23 +254,23 @@ const initTokens = async () => {
 const initMessageBus = async () => {};
 
 OBR.onReady(async () => {
-    console.info(`GM's Daggerheart - version ${version} initializing`);
+    console.info(`GM's Rivers of London - version ${version} initializing`);
     try {
         await setupContextMenu();
     } catch (e) {
-        console.warn("GM's Daggerheart - error while setting up context menu");
+        console.warn("GM's Rivers of London - error while setting up context menu");
     }
     try {
         await initMessageBus();
     } catch (e) {
-        console.warn("GM's Daggerheart - error while setting up message bus");
+        console.warn("GM's Rivers of London - error while setting up message bus");
     }
 
     if ((await OBR.player.getRole()) === "GM") {
         try {
             await initRoom();
         } catch (e) {
-            console.warn("GM's Daggerheart - Error while initializing Room", e);
+            console.warn("GM's Rivers of London - Error while initializing Room", e);
         }
 
         OBR.scene.onReadyChange(async (isReady) => {
@@ -303,18 +286,8 @@ OBR.onReady(async () => {
         try {
             await initTokens();
         } catch (e) {
-            console.warn("GM's Daggerheart - error while initializing Token event handler", e);
+            console.warn("GM's Rivers of London - error while initializing Token event handler", e);
         }
     }
-    try {
-        await setupDddice();
-        await setupDicePlus();
-    } catch (e) {
-        await OBR.notification.show(
-            "GM's Daggerheart dice roller initialization error. Check browser logs for more info.",
-            "ERROR",
-        );
-        console.warn("GM's Daggerheart - error while intializing dddice", e);
-    }
-    console.info(`GM's Daggerheart - initialization done`);
+    console.info(`GM's Rivers of London - initialization done`);
 });

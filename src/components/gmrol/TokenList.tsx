@@ -1,7 +1,7 @@
 import React from "react";
 import { Item } from "@owlbear-rodeo/sdk";
 import { itemMetadataKey } from "../../helper/variables.ts";
-import { GMDMetadata } from "../../helper/types.ts";
+import { RoLMetadata } from "../../helper/types.ts";
 import { Draggable } from "@hello-pangea/dnd";
 import { Token } from "./Token/Token.tsx";
 import { usePlayerContext } from "../../context/PlayerContext.ts";
@@ -68,7 +68,7 @@ export const PlayerTokenList = (props: TokenListProps) => {
                     }
                 })
                 .map((token) => {
-                    const data = token.metadata[itemMetadataKey] as GMDMetadata;
+                    const data = token.metadata[itemMetadataKey] as RoLMetadata;
                     if (data) {
                         return (
                             <Token

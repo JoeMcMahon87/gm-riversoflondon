@@ -70,3 +70,15 @@
     border: 1px solid lightgrey;
     text-align: center;
 }
+/* The half value, shown under each characteristic because Hard successes need it constantly. */
+.half {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.7rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* An impaired roller fumbles on 90+, which the button warns about before it is clicked. */
+.impaired {
+    border-color: var(--condition-bloodied) !important;
+}

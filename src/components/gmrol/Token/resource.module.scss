@@ -1,0 +1,66 @@
+/* Luck and magic points: a label, an editable number, and the fixed-price actions that
+   spend it. Shared by both so the two pools line up on the sheet. */
+
+.resource {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+
+    button {
+        padding: 1px 5px;
+        font-size: 0.7rem;
+        border-radius: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background-color: var(--bg4);
+        color: var(--text-color);
+        cursor: pointer;
+    }
+
+    button:disabled {
+        opacity: 0.4;
+        cursor: default;
+    }
+}
+
+.label {
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.03em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.value {
+    width: 4ch;
+    text-align: center;
+    font-family: 'Roboto Mono', monospace;
+    background-color: var(--bg2);
+    color: var(--text-color);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+}
+
+.max {
+    font-family: 'Roboto Mono', monospace;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* An empty magic point pool is not merely low: every further casting forces a
+   Hyperthaumaturgical Degradation roll, so it is coloured like a wound. */
+.depleted .value {
+    border-color: var(--condition-down);
+}
+
+.warning {
+    color: var(--condition-down);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+}
+
+/* The fatal-blow Luck spend, which is only offered in the one round it can be taken. */
+.urgent {
+    background-color: var(--condition-mortal) !important;
+    border-color: var(--condition-mortal) !important;
+    font-weight: 600;
+}

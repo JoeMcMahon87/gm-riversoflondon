@@ -1,4 +1,4 @@
-import { GMDMetadata } from "../helper/types.ts";
+import { RoLMetadata } from "../helper/types.ts";
 import { Image, Item } from "@owlbear-rodeo/sdk";
 import { create } from "zustand";
 import { itemMetadataKey } from "../helper/variables.ts";
@@ -7,11 +7,11 @@ import { isEqual } from "lodash";
 type TokenChange = {
     changeType: string;
     id: string;
-    oldData: GMDMetadata | null;
-    newData: GMDMetadata | null;
+    oldData: RoLMetadata | null;
+    newData: RoLMetadata | null;
 };
 
-export type TokenMap = Map<string, { data: GMDMetadata; item: Image }>;
+export type TokenMap = Map<string, { data: RoLMetadata; item: Image }>;
 
 export type TokenListContextType = {
     tokens: TokenMap | null;
@@ -28,7 +28,7 @@ export const useTokenListContext = create<TokenListContextType>()((set) => ({
             const changes: Array<TokenChange> = [];
             list.forEach((item) => {
                 if (itemMetadataKey in item.metadata) {
-                    const metadata = item.metadata[itemMetadataKey] as GMDMetadata;
+                    const metadata = item.metadata[itemMetadataKey] as RoLMetadata;
                     if (state.tokens && state.tokens.has(item.id)) {
                         newTokens.set(item.id, { data: metadata, item: item as Image });
                         if (!isEqual(metadata, state.tokens.get(item.id)!.data)) {

@@ -1,297 +1,100 @@
-import { DICE_ROLLER, GMDMetadata } from "../../../helper/types.ts";
-import { useDiceRoller } from "../../../context/DDDiceContext.tsx";
-import { useShallow } from "zustand/react/shallow";
-import { Image } from "@owlbear-rodeo/sdk";
-import { getTokenName } from "../../../helper/helpers.ts";
-import { useEffect, useMemo, useState } from "react";
-import { autoPlacement, safePolygon, useFloating, useHover, useInteractions } from "@floating-ui/react";
-import { useMetadataContext } from "../../../context/MetadataContext.ts";
-import { rollDualityDice } from "../../../helper/diceHelper.ts";
-import { useRollLogContext } from "../../../context/RollLogContext.tsx";
-import styles from "./stats.module.scss";
-import { EditSvg } from "../../svgs/EditSvg.tsx";
-import { updateTokenMetadata } from "../../../helper/tokenHelper.ts";
-import { toNumber } from "lodash";
-import { useTokenListContext } from "../../../context/TokenContext.tsx";
-import Tippy from "@tippyjs/react";
-import { useComponentContext } from "../../../context/ComponentContext.tsx";
+/**
+ * The five characteristics, each rollable and each editable in place.
+ *
+ * Characteristics are rolled against directly often enough in Rivers of London (a DEX
+ * roll in a chase, a POW roll for Hyperthaumaturgical Degradation, a CON roll to keep
+ * going) that they get the same roll control as skills rather than sitting on the sheet
+ * as reference numbers.
+ *
+ * Adding a characteristic means adding it to ``CHARACTERISTICS``, never editing a loop
+ * here.
+ */
 
-export const Stat = ({
-    value,
+import { useEffect, useState } from "react";
+import { Image } from "@owlbear-rodeo/sdk";
+import { toNumber } from "lodash";
+import Tippy from "@tippyjs/react";
+import { RoLMetadata } from "../../../helper/types.ts";
+import { getTokenName } from "../../../helper/helpers.ts";
+import { updateTokenMetadata } from "../../../helper/tokenHelper.ts";
+import { CHARACTERISTICS, Characteristic } from "../../../rules/types.ts";
+import { halfValue } from "../../../rules/characteristics.ts";
+import { EditSvg } from "../../svgs/EditSvg.tsx";
+import { RollButton } from "./RollButton.tsx";
+import styles from "./stats.module.scss";
+
+const Stat = ({
     name,
+    value,
     character,
     edit,
     setValue,
     id,
 }: {
+    name: Characteristic;
     value: number;
-    name: string;
     character: string;
     edit: boolean;
     setValue: (value: number) => void;
     id: string;
 }) => {
-    const { component } = useComponentContext();
-    const [theme, hopeTheme, fearTheme, initialized, rollerApi] = useDiceRoller(
-        useShallow((state) => [state.theme, state.hopeTheme, state.fearTheme, state.initialized, state.rollerApi]),
-    );
-    const [debounceValue, setDebounceValue] = useState<string>(value.toString());
-    const token = useTokenListContext(useShallow((state) => state.tokens?.get(id)));
-    const data = token?.data as GMDMetadata;
-    const addRoll = useRollLogContext(useShallow((state) => state.addRoll));
-    const room = useMetadataContext(useShallow((state) => state.room));
-    const [rolling, setRolling] = useState<boolean>(false);
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [draft, setDraft] = useState<string>(value.toString());
 
+    // Commit an in-progress edit when the sheet leaves edit mode, so a typed value is
+    // not silently discarded by clicking the pencil again.
     useEffect(() => {
-        if (!edit && debounceValue !== value.toString()) {
-            setValue(toNumber(debounceValue));
+        if (!edit && draft !== value.toString()) {
+            setValue(toNumber(draft));
         }
     }, [edit]);
 
-    const isEnabled = useMemo(() => {
-        return (
-            component === "popover" ||
-            (initialized && room?.diceRoller === DICE_ROLLER.DDDICE) ||
-            room?.diceRoller !== DICE_ROLLER.DDDICE
-        );
-    }, [initialized, room?.diceRoller]);
-
-    const { refs, floatingStyles, context } = useFloating({
-        open: isOpen,
-        onOpenChange: setIsOpen,
-        middleware: [
-            autoPlacement({
-                autoAlignment: true,
-                crossAxis: true,
-                allowedPlacements: ["left", "right"],
-            }),
-        ],
-    });
-
-    const hover = useHover(context, { handleClose: safePolygon() });
-
-    const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
+    useEffect(() => {
+        setDraft(value.toString());
+    }, [value]);
 
     return (
         <div className={`button-wrapper ${styles.stat}`}>
-            <span className={styles.name}>{name.substring(0, 3)}</span>
+            <span className={styles.name}>{name}</span>
             {edit ? (
                 <input
                     className={styles.statInput}
-                    value={debounceValue}
-                    onChange={(e) => {
-                        const newValue = e.target.value;
-                        setDebounceValue(newValue);
-                    }}
-                    onBlur={(e) => {
-                        setValue(toNumber(e.target.value));
-                    }}
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onBlur={(e) => setValue(toNumber(e.target.value))}
                 />
             ) : (
-                <button
-                    ref={refs.setReference}
-                    {...getReferenceProps()}
-                    disabled={!isEnabled}
-                    className={`dice-button button ${rolling ? "rolling" : ""} ${styles.statValue}`}
-                    onClick={async () => {
-                        setRolling(true);
-                        await rollDualityDice(
-                            value,
-                            name,
-                            character,
-                            data,
-                            id,
-                            addRoll,
-                            room,
-                            hopeTheme,
-                            fearTheme,
-                            theme,
-                            component !== "popover" ? rollerApi : null,
-                        );
-                        setRolling(false);
-                    }}
-                >
-                    {Intl.NumberFormat("en-US", { signDisplay: "always" }).format(value)}
-                </button>
+                <RollButton value={value} label={name} id={id} character={character} />
             )}
-            {isOpen && isEnabled ? (
-                <span
-                    ref={refs.setFloating}
-                    {...getFloatingProps()}
-                    style={floatingStyles}
-                    className={`dice-context-button visible full`}
-                >
-                    <button
-                        className={"advantage"}
-                        disabled={!isEnabled}
-                        onClick={async () => {
-                            await rollDualityDice(
-                                value,
-                                name,
-                                character,
-                                data,
-                                id,
-                                addRoll,
-                                room,
-                                hopeTheme,
-                                fearTheme,
-                                theme,
-                                rollerApi,
-                                "ADV",
-                            );
-                        }}
-                    >
-                        ADV
-                    </button>
-                    <button
-                        className={"disadvantage"}
-                        disabled={!isEnabled}
-                        onClick={async () => {
-                            await rollDualityDice(
-                                value,
-                                name,
-                                character,
-                                data,
-                                id,
-                                addRoll,
-                                room,
-                                hopeTheme,
-                                fearTheme,
-                                theme,
-                                rollerApi,
-                                "DIS",
-                            );
-                        }}
-                    >
-                        DIS
-                    </button>
-                    <Tippy content={"Reactions do not change hope/stress/fear"}>
-                        <button
-                            className={"reaction"}
-                            disabled={!isEnabled}
-                            onClick={async () => {
-                                await rollDualityDice(
-                                    value,
-                                    name,
-                                    character,
-                                    data,
-                                    id,
-                                    addRoll,
-                                    room,
-                                    hopeTheme,
-                                    fearTheme,
-                                    theme,
-                                    rollerApi,
-                                    "REACT",
-                                );
-                            }}
-                        >
-                            REACT
-                        </button>
-                    </Tippy>
-                    <button
-                        className={"self"}
-                        disabled={!isEnabled}
-                        onClick={async () => {
-                            await rollDualityDice(
-                                value,
-                                name,
-                                character,
-                                data,
-                                id,
-                                addRoll,
-                                room,
-                                hopeTheme,
-                                fearTheme,
-                                theme,
-                                rollerApi,
-                                "SELF",
-                            );
-                        }}
-                    >
-                        HIDE
-                    </button>
-                </span>
-            ) : null}
+            <span className={styles.half}>{halfValue(value)}</span>
         </div>
     );
 };
 
-export const Stats = ({ data, item }: { data: GMDMetadata; item: Image }) => {
+export const Stats = ({ data, item }: { data: RoLMetadata; item: Image }) => {
     const character = getTokenName(item);
     const [edit, setEdit] = useState<boolean>(false);
+
     return (
         <div className={styles.statsWrapper}>
             <div className={styles.stats}>
-                <Stat
-                    edit={edit}
-                    value={data.agility}
-                    name={"Agility"}
-                    character={character}
-                    setValue={async (value: number) => {
-                        const newData = { ...data, agility: value };
-                        await updateTokenMetadata(newData, [item.id]);
-                    }}
-                    id={item.id}
-                ></Stat>
-                <Stat
-                    edit={edit}
-                    value={data.strength}
-                    name={"Strength"}
-                    character={character}
-                    setValue={async (value: number) => {
-                        const newData = { ...data, strength: value };
-                        await updateTokenMetadata(newData, [item.id]);
-                    }}
-                    id={item.id}
-                ></Stat>
-                <Stat
-                    edit={edit}
-                    value={data.finesse}
-                    name={"Finesse"}
-                    character={character}
-                    setValue={async (value: number) => {
-                        const newData = { ...data, finesse: value };
-                        await updateTokenMetadata(newData, [item.id]);
-                    }}
-                    id={item.id}
-                ></Stat>
-                <Stat
-                    edit={edit}
-                    value={data.instinct}
-                    name={"Instinct"}
-                    character={character}
-                    setValue={async (value: number) => {
-                        const newData = { ...data, instinct: value };
-                        await updateTokenMetadata(newData, [item.id]);
-                    }}
-                    id={item.id}
-                ></Stat>
-                <Stat
-                    edit={edit}
-                    value={data.presence}
-                    name={"Presence"}
-                    character={character}
-                    setValue={async (value: number) => {
-                        const newData = { ...data, presence: value };
-                        await updateTokenMetadata(newData, [item.id]);
-                    }}
-                    id={item.id}
-                ></Stat>
-                <Stat
-                    edit={edit}
-                    value={data.knowledge}
-                    name={"Knowledge"}
-                    character={character}
-                    setValue={async (value: number) => {
-                        const newData = { ...data, knowledge: value };
-                        await updateTokenMetadata(newData, [item.id]);
-                    }}
-                    id={item.id}
-                ></Stat>
+                {CHARACTERISTICS.map((name) => (
+                    <Stat
+                        key={name}
+                        name={name}
+                        value={data.characteristics[name]}
+                        character={character}
+                        edit={edit}
+                        id={item.id}
+                        setValue={async (value: number) => {
+                            await updateTokenMetadata(
+                                { ...data, characteristics: { ...data.characteristics, [name]: value } },
+                                [item.id],
+                            );
+                        }}
+                    />
+                ))}
             </div>
-            <Tippy content={"edit stats"}>
+            <Tippy content={"Edit characteristics"}>
                 <button className={`${styles.edit} ${edit ? styles.active : ""}`} onClick={() => setEdit(!edit)}>
                     <EditSvg />
                 </button>

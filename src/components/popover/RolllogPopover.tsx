@@ -1,6 +1,6 @@
 import { ContextWrapper } from "../ContextWrapper.tsx";
 import { rollLogStore, useRollLogContext } from "../../context/RollLogContext.tsx";
-import { RollLogEntry } from "../general/DiceRoller/RollLog.tsx";
+import { RollLogEntry } from "../general/RollLog/RollLog.tsx";
 import { useInterval } from "../../helper/hooks.ts";
 import { useShallow } from "zustand/react/shallow";
 

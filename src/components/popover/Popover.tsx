@@ -1,8 +1,8 @@
 import { ContextWrapper } from "../ContextWrapper.tsx";
 import { useEffect, useState } from "react";
-import { Token } from "../gmdaggerheart/Token/Token.tsx";
+import { Token } from "../gmrol/Token/Token.tsx";
 import OBR, { Image } from "@owlbear-rodeo/sdk";
-import { GMDMetadata } from "../../helper/types.ts";
+import { RoLMetadata } from "../../helper/types.ts";
 import { SceneReadyContext } from "../../context/SceneReadyContext.ts";
 import { Loader } from "../general/Loader.tsx";
 import { useTokenListContext } from "../../context/TokenContext.tsx";
@@ -42,7 +42,7 @@ export const Popover = () => {
 const Content = (props: { id: string }) => {
     const id = props.id;
     const token = useTokenListContext(useShallow((state) => state.tokens?.get(props.id)));
-    const data = token?.data as GMDMetadata;
+    const data = token?.data as RoLMetadata;
     const item = token?.item as Image;
 
     return id && data && item ? (

@@ -17,7 +17,7 @@ export const Changelog = () => {
             <button className={"close-button"} onClick={async () => await OBR.modal.close(modalId)}>
                 X
             </button>
-            <h1>GM's Daggerheart Changelog</h1>
+            <h1>GM's Rivers of London Changelog</h1>
             <Markdown text={changelogText} />
         </>
     );

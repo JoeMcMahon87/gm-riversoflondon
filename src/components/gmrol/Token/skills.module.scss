@@ -1,0 +1,158 @@
+/* Skills and spells: a list of named values, each one a roll. Both use this sheet so a
+   practitioner's two lists read as one column. */
+
+.skills {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    h4 {
+        margin: 0;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    button {
+        height: 16px;
+        width: 16px;
+        padding: 0;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+
+        svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+    }
+}
+
+.active svg {
+    fill: orange;
+}
+
+.note {
+    font-size: 0.7rem;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.skill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+}
+
+.name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* An expert skill is marked because an investigator who lacks one cannot simply roll it
+   at 30%: it needs Trying Your Luck. */
+.expert {
+    font-style: italic;
+}
+
+.input,
+.order {
+    width: 4ch;
+    text-align: center;
+    font-family: 'Roboto Mono', monospace;
+    background-color: var(--bg2);
+    color: var(--text-color);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+}
+
+.roll {
+    flex-direction: row;
+}
+
+.mastered,
+.cast,
+.remove {
+    padding: 1px 5px;
+    font-size: 0.7rem;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background-color: var(--bg4);
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.mastered.active {
+    background-color: var(--success-critical);
+    border-color: var(--success-critical);
+    color: var(--bg1);
+    font-weight: 600;
+}
+
+.remove {
+    height: 18px;
+    width: 18px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+        width: 12px;
+        height: 12px;
+        fill: white;
+    }
+}
+
+.add {
+    display: flex;
+    gap: 3px;
+    margin-top: 2px;
+
+    input {
+        flex: 1;
+        font-size: 0.75rem;
+        background-color: var(--bg2);
+        color: var(--text-color);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 3px;
+        padding: 1px 4px;
+    }
+
+    button {
+        height: 20px;
+        width: 20px;
+        padding: 0;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 3px;
+        background-color: var(--bg4);
+        cursor: pointer;
+
+        svg {
+            width: 12px;
+            height: 12px;
+            fill: white;
+        }
+    }
+}

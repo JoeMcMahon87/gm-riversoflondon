@@ -1,13 +1,13 @@
 import { useShallow } from "zustand/react/shallow";
 import { useMetadataContext } from "../../../context/MetadataContext.ts";
-import { GMDMetadata } from "../../../helper/types.ts";
+import { RoLMetadata } from "../../../helper/types.ts";
 import { updateTokenMetadata } from "../../../helper/tokenHelper.ts";
 import style from "./group-select.module.scss";
 import OBR from "@owlbear-rodeo/sdk";
 import { updateItems } from "../../../helper/obrHelper.ts";
 import { itemMetadataKey } from "../../../helper/variables.ts";
 
-export const GroupSelect = ({ id, onSelect, data }: { id: string; onSelect: () => void; data: GMDMetadata }) => {
+export const GroupSelect = ({ id, onSelect, data }: { id: string; onSelect: () => void; data: RoLMetadata }) => {
     const [scene] = useMetadataContext(useShallow((state) => [state.scene]));
 
     return (
@@ -21,7 +21,7 @@ export const GroupSelect = ({ id, onSelect, data }: { id: string; onSelect: () =
                     if (playerSelection && playerSelection.length > 0) {
                         await updateItems(playerSelection, (items) => {
                             items.forEach((item) => {
-                                const data = item.metadata[itemMetadataKey] as GMDMetadata;
+                                const data = item.metadata[itemMetadataKey] as RoLMetadata;
                                 if (data && data.active) {
                                     data.group = targetGroup;
                                     item.metadata[itemMetadataKey] = { ...data };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTokenListContext } from "../../../context/TokenContext.tsx";
-import { GMDMetadata } from "../../../helper/types.ts";
+import { RoLMetadata } from "../../../helper/types.ts";
 import OBR, { Image } from "@owlbear-rodeo/sdk";
 import "./token-icon.scss";
 import Tippy from "@tippyjs/react";
@@ -23,7 +23,7 @@ export const TokenIcon = ({
     isDragging?: boolean;
 }) => {
     const token = useTokenListContext(useShallow((state) => state.tokens?.get(id)));
-    const data = token?.data as GMDMetadata;
+    const data = token?.data as RoLMetadata;
     const item = token?.item as Image;
     const [mouseDown, setMouseDown] = useState<boolean>(false);
     const [contextEvent, setContextEvent] = useState<MouseEvent | null>(null);

@@ -64,10 +64,10 @@ export const useInterval = (callback: Function, delay: number) => {
             }
         }
         if (delay !== null) {
-            intervalIdRef.current = setInterval(tick, delay);
+            intervalIdRef.current = window.setInterval(tick, delay);
             const id = intervalIdRef.current;
             return () => {
-                clearInterval(id);
+                window.clearInterval(id);
             };
         }
     }, [delay]);
@@ -75,14 +75,14 @@ export const useInterval = (callback: Function, delay: number) => {
     useEffect(() => {
         const id = intervalIdRef.current;
         return () => {
-            clearInterval(id);
+            window.clearInterval(id);
         };
     }, []);
 
     return useCallback(() => {
-        clearInterval(intervalIdRef.current);
+        window.clearInterval(intervalIdRef.current);
         if (savedCallback.current) {
-            intervalIdRef.current = setInterval(savedCallback.current, delay);
+            intervalIdRef.current = window.setInterval(savedCallback.current, delay);
         }
     }, [delay]);
 };
@@ -122,7 +122,7 @@ export const useLongPress = (
                 (event.target as HTMLElement).classList.add("pressing");
                 target.current = event.target;
             }
-            timeout.current = setTimeout(() => {
+            timeout.current = window.setTimeout(() => {
                 onLongPress(event);
                 (event.target as HTMLElement).classList.remove("pressing");
                 setLongPressTriggered(true);
@@ -134,7 +134,7 @@ export const useLongPress = (
 
     const clear = useCallback(
         (event: LongpressEvent, shouldTriggerClick = true) => {
-            timeout.current && clearTimeout(timeout.current);
+            timeout.current && window.clearTimeout(timeout.current);
             shouldTriggerClick && !longPressTriggered && longPressStarted && onClick(event);
             setLongPressTriggered(false);
             setLongPressStarted(false);

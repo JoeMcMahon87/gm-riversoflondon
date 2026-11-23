@@ -3,28 +3,26 @@ import { ContextWrapper } from "../ContextWrapper.tsx";
 import { usePlayerContext } from "../../context/PlayerContext.ts";
 import OBR, { Image, Item } from "@owlbear-rodeo/sdk";
 import { changelogModal, itemMetadataKey, version } from "../../helper/variables.ts";
-import { GMDMetadata } from "../../helper/types.ts";
+import { RoLMetadata } from "../../helper/types.ts";
 import { PlayerTokenList } from "./TokenList.tsx";
 import { SceneReadyContext } from "../../context/SceneReadyContext.ts";
 import { DropGroup } from "./DropGroup.tsx";
 import { reorderMetadataIndex, sortItems, updateSceneMetadata } from "../../helper/helpers.ts";
 import { compare } from "compare-versions";
 import { Helpbuttons } from "../general/Helpbuttons/Helpbuttons.tsx";
-import { DiceTray } from "../general/DiceRoller/DiceTray.tsx";
 import { useMetadataContext } from "../../context/MetadataContext.ts";
 import { TokenContextWrapper } from "../TokenContextWrapper.tsx";
 import { useTokenListContext } from "../../context/TokenContext.tsx";
 import { DraggableLocation, DropResult, DragDropContext } from "@hello-pangea/dnd";
 import { updateItems } from "../../helper/obrHelper.ts";
 import { useShallow } from "zustand/react/shallow";
-import { Fear } from "./Fear.tsx";
+import { subscribeToRolls } from "../../helper/rollHelper.ts";
 
-export const GMDaggerheart = () => {
+export const GMRiversOfLondon = () => {
     return (
         <ContextWrapper component={"action_window"}>
             <TokenContextWrapper>
                 <Content />
-                <DiceTray classes={"hp-tracker-dice-tray"} />
             </TokenContextWrapper>
         </ContextWrapper>
     );
@@ -40,7 +38,7 @@ const Content = () => {
     const { isReady } = SceneReadyContext();
 
     useEffect(() => {
-        const initGrimoire = async () => {
+        const initTracker = async () => {
             if (
                 playerContext.role === "GM" &&
                 !room?.ignoreUpdateNotification &&
@@ -56,7 +54,7 @@ const Content = () => {
                 });
             } else if (playerContext.role === "GM" && scene?.version && compare(scene.version, version, "<")) {
                 setIgnoredChanges(true);
-                await OBR.notification.show(`GM's Daggerheart has been updated to version ${version}`, "SUCCESS");
+                await OBR.notification.show(`GM's Rivers of London has been updated to version ${version}`, "SUCCESS");
             }
             if (scene?.version && compare(scene.version, version, "!=")) {
                 await updateSceneMetadata(scene, { version: version });
@@ -64,7 +62,7 @@ const Content = () => {
         };
 
         if (isReady) {
-            void initGrimoire();
+            void initTracker();
         }
     }, [isReady]);
 
@@ -73,6 +71,8 @@ const Content = () => {
             setSelectedTokens(player.selection ?? []);
         });
     }, []);
+
+    useEffect(() => subscribeToRolls(), []);
 
     const items = useMemo(() => (tokens ? [...tokens].map((t) => t[1].item) : []), [tokens]);
     const playerTokens = tokens ? [...tokens].filter((t) => t[1].data.isPlayer).map((t) => t[1].item) : [];
@@ -83,7 +83,7 @@ const Content = () => {
         if (isReady && scene?.groups) {
             for (const group of scene?.groups) {
                 const groupItems = items?.filter((item) => {
-                    const metadata = item.metadata[itemMetadataKey] as GMDMetadata;
+                    const metadata = item.metadata[itemMetadataKey] as RoLMetadata;
                     return (
                         (!metadata.group && group === "Default") ||
                         metadata.group === group ||
@@ -105,7 +105,7 @@ const Content = () => {
                 let destIndex = 0;
                 let sourceIndex = 0;
                 items.forEach((item) => {
-                    const data = item.metadata[itemMetadataKey] as GMDMetadata;
+                    const data = item.metadata[itemMetadataKey] as RoLMetadata;
                     if (destinationIds.includes(item.id)) {
                         data.index = destIndex;
                         destIndex += 1;
@@ -232,13 +232,12 @@ const Content = () => {
     };
 
     return playerContext.role ? (
-        <div className={`gm-grimoire ${playerContext.role === "PLAYER" ? "player" : ""}`}>
+        <div className={`gm-rol ${playerContext.role === "PLAYER" ? "player" : ""}`}>
             <Helpbuttons ignoredChanges={ignoredChanges} setIgnoredChange={setIgnoredChanges} />
             <h1 className={"title"}>
-                GM's Daggerheart <span className={"small"}>{version}</span>
+                GM's Rivers of London <span className={"small"}>{version}</span>
             </h1>
-            <div className={"grimoire-content"}>
-                <Fear />
+            <div className={"tracker-content"}>
                 {playerContext.role === "GM" ? (
                     <>
                         <DragDropContext onDragEnd={onDragEnd}>

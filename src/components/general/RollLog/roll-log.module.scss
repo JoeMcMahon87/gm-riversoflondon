@@ -1,0 +1,181 @@
+/* The roll log. Each entry is colour-keyed by its level of success, so the shape of a
+   fight is readable by scrolling rather than by reading every line. */
+
+.rollLog {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h3 {
+        margin: 0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    button {
+        padding: 1px 6px;
+        font-size: 0.7rem;
+        border-radius: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background-color: var(--bg4);
+        color: var(--text-color);
+        cursor: pointer;
+    }
+}
+
+.entries {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.entry {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 3px 5px;
+    border-radius: 3px;
+    background-color: var(--bg3);
+    /* The level of success is carried by the left border rather than the background, so
+       the text stays legible at every level. */
+    border-left: 3px solid transparent;
+}
+
+.critical {
+    border-left-color: var(--success-critical);
+}
+
+.hard {
+    border-left-color: var(--success-hard);
+}
+
+.regular {
+    border-left-color: var(--success-regular);
+}
+
+.failure {
+    border-left-color: var(--success-failure);
+}
+
+.fumble {
+    border-left-color: var(--success-fumble);
+}
+
+.line {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    font-size: 0.75rem;
+}
+
+.who {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.what {
+    flex: 1;
+    color: rgba(255, 255, 255, 0.7);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.result {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.dice {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    display: inline-flex;
+    gap: 4px;
+}
+
+/* With a bonus or penalty die, both candidate results are shown and the discarded one
+   is struck through, so the table can see the rule was applied rather than trust it. */
+.kept {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.discarded {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.level {
+    flex: 1;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.bought {
+    text-transform: none;
+    letter-spacing: 0;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.impaired {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--condition-bloodied);
+    font-weight: 600;
+}
+
+.hidden {
+    font-style: italic;
+    opacity: 0.6;
+    font-weight: 400;
+}
+
+.luck {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    font-size: 0.7rem;
+    margin-top: 2px;
+
+    button {
+        padding: 1px 5px;
+        font-size: 0.7rem;
+        border-radius: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background-color: var(--bg4);
+        color: var(--text-color);
+        cursor: pointer;
+    }
+}
+
+.note {
+    font-size: 0.68rem;
+    font-style: italic;
+    color: var(--success-fumble);
+}
+
+.empty {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.45);
+}

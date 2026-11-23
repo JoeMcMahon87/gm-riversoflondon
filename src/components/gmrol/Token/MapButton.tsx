@@ -62,7 +62,7 @@ export const MapButton = ({
                         e.preventDefault();
                         e.stopPropagation();
                         start.current = Date.now();
-                        timeout = setTimeout(async () => {
+                        timeout = window.setTimeout(async () => {
                             try {
                                 if (buttonRef.current) {
                                     buttonRef.current.disabled = true;
@@ -80,7 +80,7 @@ export const MapButton = ({
                     onTouchEnd={async (e) => {
                         const now = Date.now();
                         if (now - start.current < 300) {
-                            clearTimeout(timeout);
+                            window.clearTimeout(timeout);
                             try {
                                 if (buttonRef.current) {
                                     buttonRef.current.disabled = true;

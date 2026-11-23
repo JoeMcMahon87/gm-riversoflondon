@@ -39,3 +39,23 @@
     initial-value: #282828;
     inherits: false;
 }
+
+/**
+ * The damage condition track, darkening as the condition worsens.
+ *
+ * Shared by the sheet, the roll log and the map attachment, so a Bloodied token reads
+ * the same colour wherever it appears.
+ */
+:root {
+    --condition-hurt: #e8d44d;
+    --condition-bloodied: #e08b3a;
+    --condition-down: #d14343;
+    --condition-mortal: #a01f1f;
+    --condition-dead: #9a9a9a;
+
+    --success-critical: #6fd36f;
+    --success-hard: #9ad36f;
+    --success-regular: #c9d36f;
+    --success-failure: #d39a6f;
+    --success-fumble: #d36f6f;
+}

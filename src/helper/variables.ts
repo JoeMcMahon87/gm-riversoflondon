@@ -1,20 +1,29 @@
+/**
+ * Extension-wide identifiers, window definitions and the default token record.
+ *
+ * The metadata keys are namespaced by ``ID`` because Owlbear Rodeo shares one metadata
+ * bag per item across every installed extension; a bare key such as "data" would
+ * collide with the next extension that thought of it.
+ */
+
 import { Modal } from "@owlbear-rodeo/sdk/lib/types/Modal";
 import { Popover } from "@owlbear-rodeo/sdk";
-import { GMDMetadata } from "./types.ts";
+import { RoLMetadata } from "./types.ts";
+import { DEFAULT_MOV, AVERAGE_CHARACTERISTIC } from "../rules/characteristics.ts";
+import { startingSkills } from "../rules/skills.ts";
 
-export const ID = "com.tabletop-almanac.gmd";
+/** Reverse-domain identifier namespacing every metadata key and window id. */
+export const ID = "com.joemcmahon.gm-riversoflondon";
+
 export const metadataKey = `${ID}/metadata`;
 export const itemMetadataKey = `${ID}/data`;
 export const infoMetadataKey = `${ID}/text`;
 
 export const modalId = `${ID}/modal`;
-export const diceTrayModalId = `${ID}/diceTrayModal`;
-export const rollLogPopoverId = `${ID}/dice-log`;
+export const rollLogPopoverId = `${ID}/roll-log`;
 export const rollMessageChannel = `${ID}.roll-event`;
 
-export const dicePlusAvailableKey = `${ID}/dice-plus-available`;
-
-export const version = "1.1.0";
+export const version = "0.1.0";
 
 export const changelogModal: Modal = {
     id: modalId,
@@ -31,20 +40,6 @@ export const settingsModal: Modal = {
     url: "/modal.html?content=settings",
 };
 
-export const diceModal: Modal = {
-    id: modalId,
-    url: "/modal.html?content=dddice",
-};
-
-export const diceTrayModal: Modal = {
-    id: diceTrayModalId,
-    url: "/modal.html?content=dicetray",
-    fullScreen: true,
-    hidePaper: true,
-    hideBackdrop: true,
-    disablePointerEvents: true,
-};
-
 export const rollLogPopover: Popover = {
     id: rollLogPopoverId,
     url: "/rolllog.html",
@@ -57,35 +52,59 @@ export const rollLogPopover: Popover = {
     hidePaper: true,
 };
 
-export const defaultMetadata: GMDMetadata = {
+/**
+ * The record a token gets when it is first added to the tracker.
+ *
+ * Characteristics start at the book's "average human" 50 rather than at zero, so a GM
+ * who adds a passer-by and rolls immediately gets a plausible result instead of an
+ * automatic failure.
+ */
+export const defaultMetadata: RoLMetadata = {
     active: true,
-    agility: 0,
-    strength: 0,
-    finesse: 0,
-    instinct: 0,
-    presence: 0,
-    knowledge: 0,
-    evasion: 10,
-    armor: {
-        current: 3,
-        max: 3,
-    },
-    hp: {
-        current: 6,
-        max: 6,
-    },
-    stress: {
-        current: 0,
-        max: 6,
-    },
-    hope: 2,
-    weapons: [],
-    thresholds: {
-        major: 6,
-        sever: 12,
-    },
-    spotlight: 0,
     isPlayer: false,
     showOnMap: false,
+    characteristics: {
+        STR: AVERAGE_CHARACTERISTIC,
+        CON: AVERAGE_CHARACTERISTIC,
+        DEX: AVERAGE_CHARACTERISTIC,
+        INT: AVERAGE_CHARACTERISTIC,
+        POW: AVERAGE_CHARACTERISTIC,
+    },
+    skills: startingSkills(),
+    spells: [],
+    weapons: [],
+    damage: { total: 0, largestBlow: 0, luckSpentOnFatalBlow: false },
+    luck: { current: 0, starting: 0 },
+    magicPoints: { current: 0 },
+    mov: DEFAULT_MOV,
+    conditionOverride: null,
+    notes: "",
     group: "Default",
 };
+
+/**
+ * Fill in any field a stored record is missing.
+ *
+ * Records written by an older version of the extension are read, not migrated: a new
+ * field defaults here and is written back the next time the token changes. That keeps
+ * an upgrade from having to walk every scene the user has ever made, at the cost of
+ * this function having to stay exhaustive.
+ *
+ * Args:
+ *     stored: Whatever was found under ``itemMetadataKey``, which may predate any
+ *         given field.
+ *
+ * Returns:
+ *     A complete record, safe to read every field from.
+ */
+export const normalizeToken = (stored: Partial<RoLMetadata> | undefined): RoLMetadata => ({
+    ...defaultMetadata,
+    ...stored,
+    characteristics: { ...defaultMetadata.characteristics, ...stored?.characteristics },
+    damage: { ...defaultMetadata.damage, ...stored?.damage },
+    luck: { ...defaultMetadata.luck, ...stored?.luck },
+    magicPoints: { ...defaultMetadata.magicPoints, ...stored?.magicPoints },
+    skills: stored?.skills ?? defaultMetadata.skills,
+    spells: stored?.spells ?? defaultMetadata.spells,
+    weapons: stored?.weapons ?? defaultMetadata.weapons,
+});

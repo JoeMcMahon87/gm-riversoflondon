@@ -115,7 +115,7 @@ export const ContextWrapper = (props: ContextWrapperProps) => {
                             props.children
                         ) : (
                             <div>
-                                GM's Daggerheart - initializing...
+                                GM's Rivers of London - initializing...
                                 <Loader className={"initialization-loader"} />
                             </div>
                         )}
