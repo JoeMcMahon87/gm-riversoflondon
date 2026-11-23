@@ -54,7 +54,7 @@ rules, and the statblock library exists so you only have to enter it once.
 ## Installation
 
 ```bash
-git clone https://github.com/joemcmahon/gm-riversoflondon.git  # clone the repository
+git clone https://github.com/JoeMcMahon87/gm-riversoflondon.git  # clone the repository
 cd gm-riversoflondon                                           # enter it
 make install                                                   # install dependencies
 make run                                                       # serve over https://localhost:5173
