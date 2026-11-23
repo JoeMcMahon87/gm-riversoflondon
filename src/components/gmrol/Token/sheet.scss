@@ -1,0 +1,17 @@
+.token-owner {
+    .select-owner {
+        border: 1px solid lightgrey;
+        border-radius: 4px;
+        background-color: var(--bg-color);
+        max-width: 55px;
+        height: 20px;
+        color: white;
+    }
+
+    option {
+        background-color: var(--bg-color);
+        &:hover {
+            background-color: var(--bg-color-light);
+        }
+    }
+}

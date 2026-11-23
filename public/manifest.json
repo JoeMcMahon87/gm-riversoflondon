@@ -1,0 +1,17 @@
+{
+    "name": "GM's Rivers of London",
+    "version": "0.1.0",
+    "manifest_version": 1,
+    "author": "Joe McMahon",
+    "description": "Track Rivers of London investigators and NPCs: damage conditions, Luck, magic points and skills, with a percentile roller that resolves the roll-under result for you.",
+    "icon": "/icon.svg",
+    "homepage_url": "https://github.com/joemcmahon/gm-riversoflondon",
+    "action": {
+        "title": "GM's Rivers of London",
+        "icon": "/icon.svg",
+        "popover": "/",
+        "height": 1000,
+        "width": 579
+    },
+    "background_url": "/background.html"
+}

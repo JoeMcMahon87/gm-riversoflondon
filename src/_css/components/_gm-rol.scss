@@ -1,0 +1,64 @@
+@use "../utilities/breakpoint";
+
+.gm-grimoire {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    margin-bottom: 36px;
+
+    &.player {
+        .help-buttons {
+            margin-top: 0;
+        }
+    }
+
+    .title {
+        margin: 0;
+
+        .small {
+            font-size: 10px;
+        }
+    }
+
+
+    .grimoire-content {
+        width: 100%;
+        margin-top: 10px;
+
+        @include breakpoint.mobile-and-tablet-only{
+            margin-top: 30px;
+        }
+
+        .player-token-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 16px;
+        }
+    }
+
+    .gmg-name {
+        display: none;
+        grid-row: 3/3;
+        grid-column-start: 1;
+        align-items: flex-end;
+        gap: 1ch;
+        translate: 0 -100%;
+        margin-left: 7px;
+        font-weight: 800;
+        line-height: 1;
+        white-space: nowrap;
+
+        @include breakpoint.laptop {
+            display: flex;
+            translate: 0 -80%;
+        }
+
+        .small {
+            padding-bottom: 1px;
+            font-size: 0.6rem;
+        }
+    }
+}
