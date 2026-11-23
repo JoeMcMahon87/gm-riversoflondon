@@ -1,0 +1,178 @@
+![License](https://img.shields.io/badge/license-MIT-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6)
+![Owlbear Rodeo](https://img.shields.io/badge/Owlbear%20Rodeo-2.0-a4243b)
+![Tests](https://img.shields.io/badge/tests-68%20passing-brightgreen)
+
+# GM's Rivers of London
+
+An Owlbear Rodeo extension for running Rivers of London: the Roleplaying Game. It tracks
+each investigator and NPC on the map, rolls percentile dice against their skills, and
+works out what the result means, including the rules a table reliably forgets in the
+middle of a scene.
+
+It is for the person running the game. Players see their own sheets and their own rolls.
+
+---
+
+# Introduction
+
+Rivers of London is a d100 roll-under system. That part is easy to run by hand. What is
+not easy is everything stacked around a single roll: whether the character is impaired
+and so fumbles on 90 rather than 100, whether a bonus die changes which tens die counts,
+what a Hard success needed, how much Luck it would take to buy the failure up into a
+success, and whether the practitioner who just cast a spell had any magic points left to
+cast it with.
+
+**This extension does that arithmetic and leaves the judgment to you.** Click a skill
+and it tells you the result and what level of success it reached. If Luck could still
+rescue it, the log prices each option. If the character is Bloodied, the widened fumble
+range is already applied and the log says so. If a spell was cast on an empty pool, the
+roll is labeled, so the Hyperthaumaturgical Degradation roll does not get skipped.
+
+The damage model is the piece most ported trackers get wrong. Rivers of London has **no
+hit points**. A character accumulates damage and their condition is read off it, with
+the two worst conditions triggered by the size of a single blow rather than by the
+total. Four one-point knocks leave someone Down; one four-point blow is a mortal wound.
+The track here distinguishes the two, because nothing else on the sheet can recover that
+difference afterwards.
+
+**No rules text, statistics, or artwork from the game ship with this extension.** That
+material is copyright Chaosium Inc. and Ben Aaronovitch. The skill list is here as bare
+names so a sheet can be built; everything else you enter from your own copy of the
+rules, and the statblock library exists so you only have to enter it once.
+
+---
+
+# Getting Started
+
+## Prerequisites
+
+- Node.js 18 or newer
+- Yarn 1.22
+- An Owlbear Rodeo 2.0 room you are the GM of
+
+## Installation
+
+```bash
+git clone https://github.com/joemcmahon/gm-riversoflondon.git  # clone the repository
+cd gm-riversoflondon                                           # enter it
+make install                                                   # install dependencies
+make run                                                       # serve over https://localhost:5173
+```
+
+The dev server uses `mkcert` to serve over https, which Owlbear Rodeo requires. Your
+browser will warn about the certificate the first time; accept it.
+
+## Configuration
+
+Add the extension to a room from Owlbear Rodeo's extension dialog, using the manifest
+URL:
+
+```
+https://localhost:5173/manifest.json   # local development
+https://<your-pages-domain>/manifest.json   # a deployed copy
+```
+
+## Deployment
+
+The build is a static site, deployed here on Cloudflare Pages:
+
+```bash
+make build   # writes dist/
+```
+
+Cloudflare Pages build settings:
+
+| Setting | Value |
+|---|---|
+| Build command | `yarn build` |
+| Output directory | `dist` |
+| Node version | `18` or newer |
+
+`_headers` is copied into `dist/` by the build and sets `Access-Control-Allow-Origin`,
+which Owlbear Rodeo needs in order to load the manifest.
+
+---
+
+# Usage
+
+Full instructions are in `USAGE.md`, and in the `?` button inside the extension. In
+brief:
+
+## Tokens
+
+```
+Right-click a token → Add to tracker        # start tracking it
+Right-click a token → Remove from tracker   # stop, keeping the sheet
+```
+
+## Rolling
+
+Click any characteristic or skill to roll against it. Hover the button for modifiers:
+
+| Control | Effect |
+|---|---|
+| Click | Roll straight |
+| `BONUS` | Roll an extra tens die, keep the better result |
+| `PENALTY` | Roll an extra tens die, keep the worse result |
+| `HIDE` | GM only. Roll without telling the table |
+
+Bonus and penalty dice do not stack. The log shows both candidate results with the
+discarded one struck through.
+
+## Damage
+
+| Control | Effect |
+|---|---|
+| Track step | Set that condition directly |
+| `+1` / `-1` | Count damage during a fight |
+| `Clear` | End the fight and clear all damage |
+
+Impairment follows from the condition automatically and feeds every roll.
+
+## Luck
+
+The roll log prices each better level of success after a roll. Fumbles are never
+offered, because they cannot be bought off. The sheet carries the two flat-rate spends:
+`Try Luck (10)` for Trying Your Luck, and `Survive (30)`, which appears only when a
+fatal blow has landed.
+
+## Spells
+
+| Control | Effect |
+|---|---|
+| Order field | The spell's cost in magic points |
+| `M` | Mark the spell mastered: no penalty die, and +1 magic point ceiling |
+| `Cast` | Spend the points and roll Magic, with the penalty die if unmastered |
+| `Next scene` | Refill magic points |
+
+## Statblocks
+
+The library button saves the selected token's sheet under a name and applies it to any
+selection later, keeping each token's existing damage. It is stored in your browser, so
+it follows you between rooms, and exports to JSON so it can be moved or kept with your
+prep.
+
+---
+
+# Roadmap
+
+- [ ] dddice integration, for 3D dice shared with the table
+- [ ] Opposed rolls resolved between two tokens, with the tiebreaker rules
+- [ ] Pushed rolls tracked on the roll, so a failed push prompts its consequence
+- [ ] The Hyperthaumaturgical Degradation POW roll offered directly from a flagged casting
+- [ ] Chase and combat round tracking
+- [ ] Weapons wired into the damage roll, against STR for melee and DEX for ranged
+- [ ] Vestigia and Sense Vestigia prompts for GM-set scene strengths
+- [ ] Investigator creation: 280 characteristic points, six starting skills, 2D10+50 Luck
+
+---
+
+# Credits
+
+Ported from [gm-daggerheart](https://github.com/kamejosh/gm-daggerheart) by Joshua
+Hercher, MIT licensed, which supplied the Owlbear Rodeo plumbing this is built on.
+
+Rivers of London: the Roleplaying Game is copyright Chaosium Inc. Rivers of London and
+its characters are copyright Ben Aaronovitch. This extension is an unofficial tool and
+is not affiliated with or endorsed by either.

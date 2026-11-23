@@ -35,6 +35,11 @@ export const helpModal: Modal = {
     url: "/modal.html?content=help",
 };
 
+export const statblockModal: Modal = {
+    id: modalId,
+    url: "/modal.html?content=statblocks",
+};
+
 export const settingsModal: Modal = {
     id: modalId,
     url: "/modal.html?content=settings",

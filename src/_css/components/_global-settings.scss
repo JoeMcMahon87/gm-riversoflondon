@@ -115,3 +115,25 @@
         font-size: 0.7em;
     }
 }
+
+/* The statblock library's list. Each row is a name plus its two actions, so the names
+   stay scannable when the library grows past a screenful. */
+.statblock-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+
+    li {
+        justify-content: space-between;
+    }
+
+    svg {
+        width: 12px;
+        height: 12px;
+        fill: white;
+    }
+}

@@ -4,6 +4,7 @@ import { Changelog } from "./Components/Changelog.tsx";
 import OBR from "@owlbear-rodeo/sdk";
 import { modalId } from "../../helper/variables.ts";
 import { Settings } from "./Components/Settings.tsx";
+import { Statblocks } from "./Components/Statblocks.tsx";
 import { TokenContextWrapper } from "../TokenContextWrapper.tsx";
 
 export const Modal = () => {
@@ -26,6 +27,12 @@ const Content = () => {
             return (
                 <TokenContextWrapper>
                     <Settings />
+                </TokenContextWrapper>
+            );
+        } else if (content === "statblocks") {
+            return (
+                <TokenContextWrapper>
+                    <Statblocks />
                 </TokenContextWrapper>
             );
         } else {
