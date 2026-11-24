@@ -64,3 +64,10 @@
     border-color: var(--condition-mortal) !important;
     font-weight: 600;
 }
+
+/* Lets a tooltip fire for a disabled button inside it. A disabled element emits no
+   mouse events, so a tooltip attached directly to one never shows, and the button looks
+   broken rather than unaffordable. */
+.buttonWrapper {
+    display: inline-flex;
+}

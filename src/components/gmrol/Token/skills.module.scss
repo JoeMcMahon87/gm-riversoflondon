@@ -156,3 +156,41 @@
         }
     }
 }
+
+/* Shown when a token has spells but no Magic skill to cast them with. Casting is
+   disabled in that state, so this has to say why and offer the way out: a disabled
+   button with only a tooltip is invisible, because disabled elements emit no mouse
+   events and the tooltip never fires. */
+.missingSkill {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 4px 6px;
+    margin-bottom: 3px;
+    border-left: 3px solid var(--condition-hurt);
+    border-radius: 3px;
+    background-color: var(--bg4);
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.8);
+
+    button {
+        align-self: flex-start;
+        padding: 1px 6px;
+        font-size: 0.7rem;
+        border-radius: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background-color: var(--bg2);
+        color: var(--text-color);
+        cursor: pointer;
+    }
+}
+
+/* Wrapper so the Cast tooltip still works while the button is disabled. */
+.castWrapper {
+    display: inline-flex;
+}
+
+.cast:disabled {
+    opacity: 0.45;
+    cursor: default;
+}

@@ -23,6 +23,7 @@ import { makeRoll } from "../../../helper/rollHelper.ts";
 import { currentCondition } from "../../../helper/attachmentHelpers.ts";
 import { isImpaired } from "../../../rules/damage.ts";
 import { spellCost, willDegradeOnCast } from "../../../rules/magic.ts";
+import { CHOSEN_COMMON_SKILL_VALUE } from "../../../rules/skills.ts";
 import { AddSvg } from "../../svgs/AddSvg.tsx";
 import { DeleteSvg } from "../../svgs/DeleteSvg.tsx";
 import styles from "./skills.module.scss";
@@ -46,6 +47,20 @@ export const Spells = ({ id, hasOwnership }: { id: string; hasOwnership: boolean
 
     const write = async (spells: Spell[]) => {
         await updateTokenMetadata({ ...data, spells }, [item.id]);
+    };
+
+    /**
+     * Give this token the Magic skill.
+     *
+     * Casting rolls against Magic, and Magic is an expert skill, so a token built from
+     * the defaults does not have it and cannot cast. Offering to add it here is the
+     * difference between a dead button and a one-click fix.
+     */
+    const addMagicSkill = async () => {
+        await updateTokenMetadata(
+            { ...data, skills: [...data.skills, { label: "Magic", value: CHOSEN_COMMON_SKILL_VALUE, expert: true }] },
+            [item.id],
+        );
     };
 
     /**
@@ -77,8 +92,13 @@ export const Spells = ({ id, hasOwnership }: { id: string; hasOwnership: boolean
         <div className={styles.skills}>
             <div className={styles.header}>
                 <h4>Spells</h4>
-                {!magicSkill ? <span className={styles.note}>no Magic skill</span> : null}
             </div>
+            {!magicSkill ? (
+                <div className={styles.missingSkill}>
+                    <span>Casting rolls against the Magic skill, which this token does not have.</span>
+                    {hasOwnership ? <button onClick={addMagicSkill}>Add Magic skill</button> : null}
+                </div>
+            ) : null}
             <ul className={styles.list}>
                 {data.spells.map((spell, index) => (
                     <li key={`${spell.label}-${index}`} className={styles.skill}>
@@ -113,12 +133,21 @@ export const Spells = ({ id, hasOwnership }: { id: string; hasOwnership: boolean
                                     ? `Spend ${spellCost(spell.order)} magic points and roll Magic ${magicSkill.value}${
                                           spell.mastered ? "" : " with a penalty die"
                                       }`
-                                    : "This token has no Magic skill to roll"
+                                    : "This token has no Magic skill to roll against"
                             }
                         >
-                            <button className={styles.cast} disabled={!hasOwnership || !magicSkill} onClick={() => cast(spell)}>
-                                Cast
-                            </button>
+                            {/* The span is load-bearing: a disabled button emits no mouse
+                                events, so a Tippy placed directly on one never shows and
+                                the button looks simply broken. */}
+                            <span className={styles.castWrapper}>
+                                <button
+                                    className={styles.cast}
+                                    disabled={!hasOwnership || !magicSkill}
+                                    onClick={() => cast(spell)}
+                                >
+                                    Cast
+                                </button>
+                            </span>
                         </Tippy>
                         {hasOwnership ? (
                             <button

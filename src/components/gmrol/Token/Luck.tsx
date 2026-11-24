@@ -37,13 +37,24 @@ export const Luck = ({ id, hasOwnership }: { id: string; hasOwnership: boolean }
                 value={data.luck.current}
                 onChange={(e) => setLuck(readNumericInput(e.target.value, data.luck.current), data, item)}
             />
-            <Tippy content={`Trying Your Luck: spend ${TRYING_YOUR_LUCK_COST} to roll half a characteristic in place of an expert skill nobody has`}>
-                <button
-                    disabled={!hasOwnership || data.luck.current < TRYING_YOUR_LUCK_COST}
-                    onClick={() => spendLuck(TRYING_YOUR_LUCK_COST, data, item)}
-                >
-                    Try Luck ({TRYING_YOUR_LUCK_COST})
-                </button>
+            <Tippy
+                content={
+                    data.luck.current < TRYING_YOUR_LUCK_COST
+                        ? `Not enough Luck: ${TRYING_YOUR_LUCK_COST} needed, ${data.luck.current} left`
+                        : `Trying Your Luck: spend ${TRYING_YOUR_LUCK_COST} to roll half a characteristic in place of an expert skill nobody has`
+                }
+            >
+                {/* Wrapped because a disabled button emits no mouse events, so a Tippy
+                    on one never fires and the button reads as broken rather than as
+                    unaffordable. */}
+                <span className={styles.buttonWrapper}>
+                    <button
+                        disabled={!hasOwnership || data.luck.current < TRYING_YOUR_LUCK_COST}
+                        onClick={() => spendLuck(TRYING_YOUR_LUCK_COST, data, item)}
+                    >
+                        Try Luck ({TRYING_YOUR_LUCK_COST})
+                    </button>
+                </span>
             </Tippy>
             {facingFatalBlow ? (
                 <Tippy
@@ -53,13 +64,15 @@ export const Luck = ({ id, hasOwnership }: { id: string; hasOwnership: boolean }
                             : `Not enough Luck to survive: ${FATAL_BLOW_LUCK_COST} needed`
                     }
                 >
-                    <button
-                        className={styles.urgent}
-                        disabled={!hasOwnership || !canAffordSurvival}
-                        onClick={() => spendLuckOnFatalBlow(data, item, FATAL_BLOW_LUCK_COST)}
-                    >
-                        Survive ({FATAL_BLOW_LUCK_COST})
-                    </button>
+                    <span className={styles.buttonWrapper}>
+                        <button
+                            className={styles.urgent}
+                            disabled={!hasOwnership || !canAffordSurvival}
+                            onClick={() => spendLuckOnFatalBlow(data, item, FATAL_BLOW_LUCK_COST)}
+                        >
+                            Survive ({FATAL_BLOW_LUCK_COST})
+                        </button>
+                    </span>
                 </Tippy>
             ) : null}
         </div>
