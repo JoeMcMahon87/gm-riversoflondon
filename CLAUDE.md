@@ -18,6 +18,7 @@ CLAUDE.md is the rules. The reasons are in `docs/design/`.
 | What was dropped from gm-daggerheart and why | `docs/design/port.md` |
 | Rules data (skills, spell costs) and copyright | `docs/design/rules-data.md` |
 | Dice+ integration, external rollers | `docs/design/dice.md` |
+| Version numbers, the CHANGELOG, cutting a release | `docs/design/versioning.md` |
 
 ## Commands
 
@@ -28,6 +29,8 @@ make build              # tsc && vite build, writes dist/
 yarn test               # vitest, rules layer only
 yarn test:watch         # vitest in watch mode
 ./node_modules/.bin/tsc --noEmit    # type-check; `npx tsc` picks up a newer global TS and fails
+make check-version      # package.json, public/manifest.json and CHANGELOG.md all name one version
+git tag -a v0.3.0 -m "Release 0.3.0" && git push origin v0.3.0   # tag a release, on main, after the merge
 ```
 
 ## Layout
@@ -90,6 +93,19 @@ yarn test:watch         # vitest in watch mode
 - Every token mutation goes through `src/helper/tokenHelper.ts`, which also redraws the
   map attachment. Writing `item.metadata` from a component leaves the map stale.
 
+**Versioning**
+
+- A version bump touches `package.json`, `public/manifest.json` and `CHANGELOG.md` in
+  one commit. CI fails the build if they disagree, because a stale manifest version is
+  what the GM sees in Owlbear Rodeo's extension list for as long as their room caches it.
+- The newest `CHANGELOG.md` section is the current version and carries a real date.
+  There is no `Unreleased` section.
+- A shipped CHANGELOG section is never rewritten. A later section carries the
+  correction, so the notes never disagree with the tag.
+- Release tags are `v`-prefixed, annotated, and never moved. The README's version badge
+  resolves the newest tag; moving one points it at a commit that is not what shipped.
+- Tag `main` after the merge, never a local branch. The tag has to name what deployed.
+
 **Failure handling**
 
 - A failed roll broadcast is logged and swallowed. The roll already happened; failing
@@ -100,6 +116,10 @@ yarn test:watch         # vitest in watch mode
 
 - `yarn test` runs `src/rules/**/*.test.ts` only. The rest of the tree needs a virtual
   tabletop and is not unit-tested.
+- CI (`.github/workflows/ci.yml`) runs the version check, `tsc --noEmit`, the tests and
+  the build, in that order, on every push and pull request to `main` and on every `v*`
+  tag. Those are the same four commands as locally; keep them that way, so a green run
+  means a clone builds.
 - Test names are sentences about the behavior. No docstrings on tests.
 - Fixture values come from the book's own worked examples where one exists (Nafeesa's
   34 against Stealth 30 costing 4 Luck, STR 40 halving to 20). A test that matches the

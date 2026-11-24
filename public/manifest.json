@@ -1,6 +1,6 @@
 {
     "name": "GM's Rivers of London",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "manifest_version": 1,
     "author": "Joe McMahon",
     "description": "Track Rivers of London investigators: damage conditions, Luck, magic points, and a d100 roller that reads the result.",

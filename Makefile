@@ -14,3 +14,6 @@ clean:
 
 test:
 	yarn test
+
+check-version:
+	yarn check:version

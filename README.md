@@ -1,6 +1,10 @@
-![License](https://img.shields.io/badge/license-MIT-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6)
-![Owlbear Rodeo](https://img.shields.io/badge/Owlbear%20Rodeo-2.0-a4243b)
+[![CI](https://img.shields.io/github/actions/workflow/status/JoeMcMahon87/gm-riversoflondon/ci.yml?branch=main&label=CI&logo=github)](https://github.com/JoeMcMahon87/gm-riversoflondon/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/v/tag/JoeMcMahon87/gm-riversoflondon?sort=semver&label=version&color=a4243b)](https://github.com/JoeMcMahon87/gm-riversoflondon/tags)
+[![License: MIT](https://img.shields.io/github/license/JoeMcMahon87/gm-riversoflondon?color=blue)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6?logo=typescript&logoColor=white)](tsconfig.json)
+[![Node](https://img.shields.io/badge/node-%3E%3D18-5fa04e?logo=node.js&logoColor=white)](package.json)
+[![Owlbear Rodeo](https://img.shields.io/badge/Owlbear%20Rodeo-2.0-a4243b)](https://www.owlbear.rodeo/)
+[![Last commit](https://img.shields.io/github/last-commit/JoeMcMahon87/gm-riversoflondon)](https://github.com/JoeMcMahon87/gm-riversoflondon/commits/main)
 
 # GM's Rivers of London
 
@@ -148,6 +152,27 @@ fail every deploy.
 which Owlbear Rodeo needs in order to load the manifest. Owlbear Rodeo fetches the
 manifest cross-origin from its own page, so without that header the extension cannot be
 added at all, and the failure looks like an invalid URL rather than a missing header.
+
+## Releases
+
+Versions follow semantic versioning. The release notes for every version are in
+`CHANGELOG.md`, and each released version has an annotated `vX.Y.Z` tag on `main`
+naming the commit that deployed.
+
+```bash
+yarn check:version   # confirm package.json, public/manifest.json and CHANGELOG.md agree
+git log --oneline --decorate --tags   # see which commit each version tag names
+```
+
+The version number appears in three files that nothing keeps in step automatically, so
+CI fails a build whose `package.json`, `public/manifest.json` and newest `CHANGELOG.md`
+section disagree. The one that matters is the manifest: Owlbear Rodeo shows that number
+in the extension list, and a room keeps using the manifest it was added with.
+
+Pushing a `v*` tag re-runs CI against that exact commit and additionally requires the
+tag to name the version in `package.json`. There is no release artifact to download:
+`main` is deployed continuously, and the tag exists to record what a version number
+refers to. See `docs/design/versioning.md` for how a release is cut.
 
 ---
 

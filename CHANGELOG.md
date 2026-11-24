@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.1] - 2026-11-24
+
+### Added
+
+- A CI workflow: every push and pull request type-checks, runs the tests, builds, and
+  checks that the version is stated consistently. The README's CI badge reports it.
+- `make check-version`, which fails if `package.json`, `public/manifest.json` and the
+  newest `CHANGELOG.md` section do not name one version. A manifest left at the previous
+  version is the expensive mistake, because Owlbear Rodeo shows that number to the GM
+  for as long as their room caches the manifest.
+- `docs/design/versioning.md`: the version scheme, where the number is written, and how
+  a release is cut and tagged.
+- A version badge in the README, resolving the newest `vX.Y.Z` tag.
+
+### Changed
+
+- The README's badges link to the file or site that backs each claim, and the license
+  badge reads `LICENSE` rather than hard-coding MIT.
+
 ## [0.2.0] - 2026-11-24
 
 ### Added
