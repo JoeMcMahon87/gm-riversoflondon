@@ -118,7 +118,16 @@ Cloudflare Pages build settings:
 |---|---|
 | Build command | `yarn build` |
 | Output directory | `dist` |
-| Node version | `18` or newer |
+| Root directory | leave blank |
+| Node version | from `.nvmrc`, currently `22` |
+
+`.nvmrc` pins the Node version Pages builds with. Without it Pages picks its own
+default, which has historically been old enough to fail a Vite 6 build.
+
+`vite-plugin-mkcert` is declared `apply: "serve"`, so it runs only for the dev server
+and never during a build. That matters because it needs `sudo` to install a certificate
+authority, which no build container can provide; a plugin that ran at build time would
+fail on Pages every time.
 
 `_headers` is copied into `dist/` by the build and sets `Access-Control-Allow-Origin`,
 which Owlbear Rodeo needs in order to load the manifest.
