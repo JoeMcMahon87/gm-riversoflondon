@@ -1,7 +1,6 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6)
 ![Owlbear Rodeo](https://img.shields.io/badge/Owlbear%20Rodeo-2.0-a4243b)
-![Tests](https://img.shields.io/badge/tests-68%20passing-brightgreen)
 
 # GM's Rivers of London
 
