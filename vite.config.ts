@@ -5,7 +5,13 @@ import copy from "rollup-plugin-copy";
 
 declare var __dirname: string;
 export default defineConfig({
-    server: { host: "0.0.0.0", cors: true },
+    /**
+     * `cors` is required: Owlbear Rodeo loads the manifest cross-origin from the dev
+     * server. `host` is deliberately left at Vite's localhost default, so a clone does
+     * not publish someone's dev server to their whole network; set it per-machine with
+     * `vite --host` when serving to another device.
+     */
+    server: { cors: true },
     assetsInclude: ["**/*.md"],
     build: {
         rollupOptions: {
