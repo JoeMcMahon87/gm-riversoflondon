@@ -111,3 +111,10 @@ table {
         padding: 0.2ch 1ch;
     }
 }
+
+/* The browser's own rule for `hidden` is only `display: none`, so any class that sets
+   display outranks it on specificity and the element stays visible. This makes the
+   attribute mean what it says, repo-wide. */
+[hidden] {
+    display: none !important;
+}

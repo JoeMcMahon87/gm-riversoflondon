@@ -84,47 +84,52 @@ export const Skills = ({ id, hasOwnership }: { id: string; hasOwnership: boolean
                     </Tippy>
                 ) : null}
             </div>
-            <ul className={styles.list} hidden={!open}>
-                {data.skills.map((skill, index) => (
-                    <li key={`${skill.label}-${index}`} className={styles.skill}>
-                        <Tippy content={`${skillBand(skill.value)} · Hard ${halfValue(skill.value)}`}>
-                            <span className={`${styles.name} ${skill.expert ? styles.expert : ""}`}>
-                                {skill.label}
-                            </span>
-                        </Tippy>
-                        {edit ? (
-                            <>
-                                <input
-                                    className={styles.input}
-                                    value={skill.value}
-                                    disabled={!hasOwnership}
-                                    onChange={(e) => {
-                                        const value = Math.max(Number(e.target.value.replace(/[^0-9]/g, "")) || 0, 0);
-                                        write(data.skills.map((s, i) => (i === index ? { ...s, value } : s)));
-                                    }}
-                                />
-                                <Tippy content={"Remove this skill"}>
-                                    <button
-                                        className={styles.remove}
+            {open ? (
+                <ul className={styles.list}>
+                    {data.skills.map((skill, index) => (
+                        <li key={`${skill.label}-${index}`} className={styles.skill}>
+                            <Tippy content={`${skillBand(skill.value)} · Hard ${halfValue(skill.value)}`}>
+                                <span className={`${styles.name} ${skill.expert ? styles.expert : ""}`}>
+                                    {skill.label}
+                                </span>
+                            </Tippy>
+                            {edit ? (
+                                <>
+                                    <input
+                                        className={styles.input}
+                                        value={skill.value}
                                         disabled={!hasOwnership}
-                                        onClick={() => write(data.skills.filter((_, i) => i !== index))}
-                                    >
-                                        <DeleteSvg />
-                                    </button>
-                                </Tippy>
-                            </>
-                        ) : (
-                            <RollButton
-                                value={skill.value}
-                                label={skill.label}
-                                id={id}
-                                character={character}
-                                className={styles.roll}
-                            />
-                        )}
-                    </li>
-                ))}
-            </ul>
+                                        onChange={(e) => {
+                                            const value = Math.max(
+                                                Number(e.target.value.replace(/[^0-9]/g, "")) || 0,
+                                                0,
+                                            );
+                                            write(data.skills.map((s, i) => (i === index ? { ...s, value } : s)));
+                                        }}
+                                    />
+                                    <Tippy content={"Remove this skill"}>
+                                        <button
+                                            className={styles.remove}
+                                            disabled={!hasOwnership}
+                                            onClick={() => write(data.skills.filter((_, i) => i !== index))}
+                                        >
+                                            <DeleteSvg />
+                                        </button>
+                                    </Tippy>
+                                </>
+                            ) : (
+                                <RollButton
+                                    value={skill.value}
+                                    label={skill.label}
+                                    id={id}
+                                    character={character}
+                                    className={styles.roll}
+                                />
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            ) : null}
             {open && edit && hasOwnership ? (
                 <div className={styles.add}>
                     <input
