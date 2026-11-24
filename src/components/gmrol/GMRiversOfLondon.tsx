@@ -17,6 +17,7 @@ import { DraggableLocation, DropResult, DragDropContext } from "@hello-pangea/dn
 import { updateItems } from "../../helper/obrHelper.ts";
 import { useShallow } from "zustand/react/shallow";
 import { subscribeToRolls } from "../../helper/rollHelper.ts";
+import { RollLog } from "../general/RollLog/RollLog.tsx";
 
 export const GMRiversOfLondon = () => {
     return (
@@ -268,6 +269,7 @@ const Content = () => {
                     <PlayerTokenList tokens={playerTokens} selected={selectedTokens} tokenLists={tokenLists} />
                 )}
             </div>
+            <RollLog classes={"action-window-roll-log"} />
         </div>
     ) : (
         <h1>Waiting for OBR startup</h1>
