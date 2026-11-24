@@ -218,6 +218,19 @@ prep.
 
 ---
 
+# The icon
+
+A custodian helmet with a werelight where the badge sits: the Metropolitan Police and
+the Folly in one mark.
+
+The three files in `public/` are white with a single accent, because Owlbear Rodeo does
+not recolor extension icons. It renders the file as given, and its chrome is dark, so a
+dark silhouette would be invisible on the toolbar. `iconOff.svg` is the same helmet
+struck through, with the slash masked out of the shape beneath it so it reads without
+assuming a background color.
+
+---
+
 # Credits
 
 Ported from [gm-daggerheart](https://github.com/kamejosh/gm-daggerheart) by Joshua
