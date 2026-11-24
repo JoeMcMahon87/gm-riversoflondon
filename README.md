@@ -44,6 +44,15 @@ rules, and the statblock library exists so you only have to enter it once.
 
 # Getting Started
 
+To **use** the extension you need nothing but the room. Paste this manifest URL into
+Owlbear Rodeo's extension dialog, as the GM of an Owlbear Rodeo 2.0 room:
+
+```
+https://gm-riversoflondon.joe-mcmahon-home.workers.dev/manifest.json
+```
+
+Everything below is for building it yourself.
+
 ## Prerequisites
 
 - Node.js 18 or newer
@@ -95,23 +104,27 @@ the server still starts; only the browser warning remains.
 
 ## Configuration
 
-Add the extension to a room from Owlbear Rodeo's extension dialog, using the manifest
-URL:
+Add the extension to a room from Owlbear Rodeo's extension dialog, using a manifest
+URL. The hosted copy needs none of the installation above:
 
 ```
-https://localhost:5173/manifest.json   # local development
-https://<your-pages-domain>/manifest.json   # a deployed copy
+https://gm-riversoflondon.joe-mcmahon-home.workers.dev/manifest.json   # the hosted copy
+https://localhost:5173/manifest.json                                   # your own dev server
 ```
+
+The hosted copy tracks `main`. Owlbear Rodeo caches a manifest per room, so a room added
+before a release keeps the older version until you remove and re-add the extension.
 
 ## Deployment
 
-The build is a static site, deployed here on Cloudflare Pages:
+The build is a static site with no server side, deployed on Cloudflare Workers as
+static assets:
 
 ```bash
 make build   # writes dist/
 ```
 
-Cloudflare Pages build settings:
+Build settings:
 
 | Setting | Value |
 |---|---|
@@ -120,16 +133,21 @@ Cloudflare Pages build settings:
 | Root directory | leave blank |
 | Node version | from `.nvmrc`, currently `22` |
 
-`.nvmrc` pins the Node version Pages builds with. Without it Pages picks its own
+There is no `wrangler.toml` in the repository: the deployment is configured in the
+Cloudflare dashboard, which is why the settings are written down here instead.
+
+`.nvmrc` pins the Node version the build runs with. Without it Cloudflare picks its own
 default, which has historically been old enough to fail a Vite 6 build.
 
 `vite-plugin-mkcert` is declared `apply: "serve"`, so it runs only for the dev server
 and never during a build. That matters because it needs `sudo` to install a certificate
 authority, which no build container can provide; a plugin that ran at build time would
-fail on Pages every time.
+fail every deploy.
 
 `_headers` is copied into `dist/` by the build and sets `Access-Control-Allow-Origin`,
-which Owlbear Rodeo needs in order to load the manifest.
+which Owlbear Rodeo needs in order to load the manifest. Owlbear Rodeo fetches the
+manifest cross-origin from its own page, so without that header the extension cannot be
+added at all, and the failure looks like an invalid URL rather than a missing header.
 
 ---
 

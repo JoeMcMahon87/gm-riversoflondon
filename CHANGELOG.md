@@ -27,6 +27,8 @@
   support "for me".
 - The hardcoded test-count badge is gone from the README: nothing verified it, and it
   was wrong by eight.
+- The README leads with the hosted manifest URL, and names Cloudflare Workers as what
+  serves it rather than Cloudflare Pages, which it never was.
 
 ### Removed
 
