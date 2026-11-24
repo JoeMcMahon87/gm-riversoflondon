@@ -1,6 +1,6 @@
 import OBR, { Metadata } from "@owlbear-rodeo/sdk";
-import { ID, itemMetadataKey, metadataKey, version } from "../helper/variables.ts";
-import { ItemChanges, RoLMetadata, RoomMetadata, SceneMetadata } from "../helper/types.ts";
+import { defaultRoomMetadata, ID, itemMetadataKey, metadataKey, version } from "../helper/variables.ts";
+import { ItemChanges, RoLMetadata, SceneMetadata } from "../helper/types.ts";
 import { v4 as uuidv4 } from "uuid";
 import { getAttachedItems, initToken } from "../helper/helpers.ts";
 import { updateItems } from "../helper/obrHelper.ts";
@@ -38,11 +38,7 @@ const initRoom = async () => {
     const metadata: Metadata = await OBR.room.getMetadata();
     const ownMetadata: Metadata = {};
     if (!(metadataKey in metadata)) {
-        const roomData: RoomMetadata = {
-            ignoreUpdateNotification: false,
-            revealSuccessLevel: true,
-        };
-        ownMetadata[metadataKey] = roomData;
+        ownMetadata[metadataKey] = defaultRoomMetadata;
     }
     await OBR.room.setMetadata(ownMetadata);
 };

@@ -8,7 +8,7 @@
 
 import { Modal } from "@owlbear-rodeo/sdk/lib/types/Modal";
 import { Popover } from "@owlbear-rodeo/sdk";
-import { RoLMetadata } from "./types.ts";
+import { RoLMetadata, RoomMetadata } from "./types.ts";
 import { DEFAULT_MOV, AVERAGE_CHARACTERISTIC } from "../rules/characteristics.ts";
 import { startingSkills } from "../rules/skills.ts";
 
@@ -55,6 +55,20 @@ export const rollLogPopover: Popover = {
     marginThreshold: 10,
     disableClickAway: true,
     hidePaper: true,
+};
+
+/**
+ * The room's settings before anyone changes them.
+ *
+ * The action window falls back to these rather than waiting for the background script
+ * to write them. Room metadata is only settings, so a sensible default is always
+ * better than a spinner: a background script that fails, is slow, or never ran (a
+ * player opening the window before the GM's script has written anything) must not be
+ * able to block the UI forever.
+ */
+export const defaultRoomMetadata: RoomMetadata = {
+    ignoreUpdateNotification: false,
+    revealSuccessLevel: true,
 };
 
 /**

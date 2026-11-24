@@ -3,7 +3,7 @@ import { PlayerContext, PlayerContextType } from "../context/PlayerContext.ts";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PluginGate } from "../context/PluginGateContext.tsx";
-import { metadataKey } from "../helper/variables.ts";
+import { defaultRoomMetadata, metadataKey } from "../helper/variables.ts";
 import { useMetadataContext } from "../context/MetadataContext.ts";
 import { RoomMetadata, SceneMetadata } from "../helper/types.ts";
 import { Loader } from "./general/Loader.tsx";
@@ -56,13 +56,22 @@ export const ContextWrapper = (props: ContextWrapperProps) => {
                 setPlayerName(player.name);
             });
 
-            // this throws an error when creating a new room so we catch it
+            // Room metadata is read for its settings, but the window must not depend on
+            // it: getMetadata throws while a room is being created, and the background
+            // script that writes the defaults runs only for the GM and only after its
+            // own OBR.onReady. Falling back to the defaults here is what stops any of
+            // that from leaving the window spinning on "initializing" forever.
             try {
                 const roomMetadata = await OBR.room.getMetadata();
-                if (metadataKey in roomMetadata) {
-                    setRoomMetadata(roomMetadata[metadataKey] as RoomMetadata);
-                }
-            } catch {}
+                setRoomMetadata(
+                    metadataKey in roomMetadata
+                        ? (roomMetadata[metadataKey] as RoomMetadata)
+                        : defaultRoomMetadata,
+                );
+            } catch (e) {
+                console.warn("GM's Rivers of London: could not read room metadata, using defaults", e);
+                setRoomMetadata(defaultRoomMetadata);
+            }
 
             OBR.room.onMetadataChange((metadata) => {
                 if (metadataKey in metadata) {
