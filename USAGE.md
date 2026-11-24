@@ -87,6 +87,10 @@ The two flat-rate Luck spends have their own buttons on the sheet:
 
 # Skills
 
+Click the `Skills` heading to collapse or expand the list. A collapsed section shows
+how many skills are hidden, and the choice is remembered per token, so a GM can keep a
+crowd of NPCs folded away and leave the investigator they are running open.
+
 Click the pencil beside `Skills` to edit. Type to add a skill; the box suggests the
 skills the rules name, but accepts anything you type, since the rules themselves invite
 new ones.

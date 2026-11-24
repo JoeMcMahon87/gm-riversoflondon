@@ -15,11 +15,14 @@ import { useTokenListContext } from "../../../context/TokenContext.tsx";
 import { RoLMetadata, Skill } from "../../../helper/types.ts";
 import { getTokenName } from "../../../helper/helpers.ts";
 import { updateTokenMetadata } from "../../../helper/tokenHelper.ts";
+import { useLocalStorage } from "../../../helper/hooks.ts";
+import { ID } from "../../../helper/variables.ts";
 import { ALL_SKILLS, BASE_COMMON_SKILL_VALUE, skillBand } from "../../../rules/skills.ts";
 import { halfValue } from "../../../rules/characteristics.ts";
 import { AddSvg } from "../../svgs/AddSvg.tsx";
 import { DeleteSvg } from "../../svgs/DeleteSvg.tsx";
 import { EditSvg } from "../../svgs/EditSvg.tsx";
+import { ArrowSvg } from "../../svgs/ArrowSvg.tsx";
 import { RollButton } from "./RollButton.tsx";
 import styles from "./skills.module.scss";
 
@@ -29,6 +32,9 @@ export const Skills = ({ id, hasOwnership }: { id: string; hasOwnership: boolean
     const item = token?.item as Image | undefined;
     const [edit, setEdit] = useState(false);
     const [adding, setAdding] = useState("");
+    // Kept per token and per browser rather than in scene metadata: which sections a GM
+    // has open is their own view of the sheet, not something to impose on the table.
+    const [open, setOpen] = useLocalStorage<boolean>(`${ID}/skills-open/${id}`, true);
 
     if (!data || !item) {
         return null;
@@ -58,14 +64,27 @@ export const Skills = ({ id, hasOwnership }: { id: string; hasOwnership: boolean
     return (
         <div className={styles.skills}>
             <div className={styles.header}>
-                <h4>Skills</h4>
-                <Tippy content={"Edit skill values"}>
-                    <button className={edit ? styles.active : ""} onClick={() => setEdit(!edit)}>
-                        <EditSvg />
-                    </button>
-                </Tippy>
+                <button
+                    className={`${styles.collapse} ${open ? styles.open : ""}`}
+                    onClick={() => setOpen(!open)}
+                    aria-expanded={open}
+                    title={open ? "Collapse skills" : "Expand skills"}
+                >
+                    <ArrowSvg />
+                    <h4>Skills</h4>
+                </button>
+                {/* The count stands in for the list while it is hidden, so a collapsed
+                    section still says whether there is anything in it. */}
+                {!open ? <span className={styles.count}>{data.skills.length}</span> : null}
+                {open ? (
+                    <Tippy content={"Edit skill values"}>
+                        <button className={edit ? styles.active : ""} onClick={() => setEdit(!edit)}>
+                            <EditSvg />
+                        </button>
+                    </Tippy>
+                ) : null}
             </div>
-            <ul className={styles.list}>
+            <ul className={styles.list} hidden={!open}>
                 {data.skills.map((skill, index) => (
                     <li key={`${skill.label}-${index}`} className={styles.skill}>
                         <Tippy content={`${skillBand(skill.value)} · Hard ${halfValue(skill.value)}`}>
@@ -106,7 +125,7 @@ export const Skills = ({ id, hasOwnership }: { id: string; hasOwnership: boolean
                     </li>
                 ))}
             </ul>
-            {edit && hasOwnership ? (
+            {open && edit && hasOwnership ? (
                 <div className={styles.add}>
                     <input
                         list={`${id}-skill-options`}

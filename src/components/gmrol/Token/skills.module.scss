@@ -194,3 +194,47 @@
     opacity: 0.45;
     cursor: default;
 }
+
+/* The section heading doubles as the collapse toggle. The whole heading is the hit
+   target rather than the arrow alone, because the arrow is 14px and this sheet is used
+   on tablets. */
+.collapse {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+
+    h4 {
+        margin: 0;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    svg {
+        width: 14px;
+        height: 14px;
+        fill: rgba(255, 255, 255, 0.6);
+        /* ArrowSvg points down; collapsed turns it to point right at the hidden list. */
+        transform: rotate(-90deg);
+        transition: transform 0.15s ease;
+    }
+
+    &.open svg {
+        transform: rotate(0deg);
+    }
+}
+
+/* How many skills are hidden, shown only while collapsed. */
+.count {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.45);
+}
