@@ -1,0 +1,45 @@
+# Everything a release has to pass, in one job.
+#
+# The steps are the same four commands a maintainer runs locally, in the same order, so
+# a green run here means a clone builds. `yarn build` runs `tsc` itself, but the
+# type-check is kept as its own step: a type error that way names itself in the log
+# instead of arriving as a failed build.
+name: CI
+
+on:
+    push:
+        branches: [main]
+        # A release tag build re-runs the checks against the exact commit being released
+        # and additionally requires the tag to name the version in package.json.
+        tags: ["v*"]
+    pull_request:
+        branches: [main]
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  # .nvmrc is the single source for the Node version: Cloudflare's build
+                  # reads it too, so CI cannot drift from the deploy by pinning its own.
+                  node-version-file: .nvmrc
+                  cache: yarn
+
+            # --frozen-lockfile fails rather than resolving a new tree, so CI tests the
+            # dependency versions that are committed.
+            - run: yarn install --frozen-lockfile
+
+            - name: Check the version is stated consistently
+              env:
+                  RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+              run: node scripts/check-version.mjs ${RELEASE_TAG:+--tag "$RELEASE_TAG"}
+
+            - name: Type-check
+              run: ./node_modules/.bin/tsc --noEmit
+
+            - run: yarn test
+
+            - run: yarn build
