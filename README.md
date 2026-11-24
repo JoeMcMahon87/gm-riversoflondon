@@ -60,8 +60,39 @@ make install                                                   # install depende
 make run                                                       # serve over https://localhost:5173
 ```
 
-The dev server uses `mkcert` to serve over https, which Owlbear Rodeo requires. Your
-browser will warn about the certificate the first time; accept it.
+## Trusting the dev certificate
+
+Owlbear Rodeo will only load an extension over https, so the dev server uses
+`vite-plugin-mkcert` to generate a local certificate. Its certificate authority has to
+be in your system trust store before `make run` will start.
+
+Run this **once**, as yourself, in an interactive terminal:
+
+```bash
+CAROOT=~/.vite-plugin-mkcert ~/.vite-plugin-mkcert/mkcert -install   # prompts for sudo
+```
+
+Two things about that command are deliberate, and both cost an afternoon to work out:
+
+- **`CAROOT` must point at the plugin's own directory.** The plugin keeps a certificate
+  authority separate from mkcert's default `~/.local/share/mkcert`. A plain
+  `mkcert -install` installs the wrong authority, and the plugin goes on failing.
+- **Do not use `sudo` for the whole command.** Under `sudo`, mkcert builds an authority
+  for `root` and installs that instead, leaving the plugin's own authority untrusted. It
+  also cannot find your Firefox and Chrome profiles, because it looks in root's home
+  directory, which is what produces
+  `ERROR: no Firefox and/or Chrome/Chromium security databases found`.
+
+The `sudo` prompt inside the command is expected: writing to the system trust store
+needs it, and mkcert asks for it on its own.
+
+If the dev server fails with `failed to execute "tee"` and
+`sudo: A terminal is required to authenticate`, the authority is not trusted yet and the
+command above is the fix. The error means mkcert tried to install it and could not
+prompt.
+
+Browser trust needs NSS's `certutil` (`libnss3-tools` on Debian and Ubuntu). Without it
+the server still starts; only the browser warning remains.
 
 ## Configuration
 
