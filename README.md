@@ -1,6 +1,6 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/JoeMcMahon87/gm-riversoflondon/ci.yml?branch=main&label=CI&logo=github)](https://github.com/JoeMcMahon87/gm-riversoflondon/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/github/v/tag/JoeMcMahon87/gm-riversoflondon?sort=semver&label=version&color=a4243b)](https://github.com/JoeMcMahon87/gm-riversoflondon/tags)
-[![License: MIT](https://img.shields.io/github/license/JoeMcMahon87/gm-riversoflondon?color=blue)](LICENSE)
+[![License: MIT](https://img.shields.io/github/license/JoeMcMahon87/gm-riversoflondon?color=blue)](LICENSE.md)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6?logo=typescript&logoColor=white)](tsconfig.json)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-5fa04e?logo=node.js&logoColor=white)](package.json)
 [![Owlbear Rodeo](https://img.shields.io/badge/Owlbear%20Rodeo-2.0-a4243b)](https://www.owlbear.rodeo/)
@@ -277,6 +277,10 @@ assuming a background color.
 
 Ported from [gm-daggerheart](https://github.com/kamejosh/gm-daggerheart) by Joshua
 Hercher, MIT licensed, which supplied the Owlbear Rodeo plumbing this is built on.
+
+MIT licensed, in `LICENSE.md`: use it, fork it, sell it, as long as the copyright and
+permission notices travel with it. `NOTICE.md` says how to credit a fork and names what
+the notice has to carry.
 
 Rivers of London: the Roleplaying Game is copyright Chaosium Inc. Rivers of London and
 its characters are copyright Ben Aaronovitch. This extension is an unofficial tool and

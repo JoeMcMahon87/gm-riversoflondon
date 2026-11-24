@@ -13,11 +13,18 @@
 - `docs/design/versioning.md`: the version scheme, where the number is written, and how
   a release is cut and tagged.
 - A version badge in the README, resolving the newest `vX.Y.Z` tag.
+- `NOTICE.md`: how to credit a fork, what the MIT notice has to carry, the upstream port
+  credit, and the Chaosium material this deliberately does not contain.
 
 ### Changed
 
 - The README's badges link to the file or site that backs each claim, and the license
-  badge reads `LICENSE` rather than hard-coding MIT.
+  badge reads `LICENSE.md` rather than hard-coding MIT.
+- `LICENSE` is now `LICENSE.md` and holds the MIT text alone. The notices appended under
+  it meant GitHub reported the license as unidentifiable, which is what the README's
+  license badge was reporting in turn.
+- `package.json` states `"license": "MIT"`, so the license is machine-readable and not
+  only a file in the root.
 
 ## [0.2.0] - 2026-11-24
 
