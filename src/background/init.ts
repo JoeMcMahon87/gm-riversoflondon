@@ -2,8 +2,9 @@ import OBR, { Metadata } from "@owlbear-rodeo/sdk";
 import { defaultRoomMetadata, ID, itemMetadataKey, metadataKey, version } from "../helper/variables.ts";
 import { ItemChanges, RoLMetadata, SceneMetadata } from "../helper/types.ts";
 import { v4 as uuidv4 } from "uuid";
-import { getAttachedItems, initToken } from "../helper/helpers.ts";
+import { delay, getAttachedItems, initToken } from "../helper/helpers.ts";
 import { updateItems } from "../helper/obrHelper.ts";
+import { checkDicePlusReady } from "../helper/dicePlus.ts";
 import {
     saveOrChangeAttachments,
     updateAttachmentChanges,
@@ -285,5 +286,16 @@ OBR.onReady(async () => {
             console.warn("GM's Rivers of London - error while initializing Token event handler", e);
         }
     }
+    // Dice+ is a separate extension and may still be starting, so a single check can
+    // miss it. One retry is enough in practice and keeps startup short.
+    try {
+        if (!(await checkDicePlusReady())) {
+            await delay(5000);
+            await checkDicePlusReady();
+        }
+    } catch (e) {
+        console.warn("GM's Rivers of London - error while checking for Dice+", e);
+    }
+
     console.info(`GM's Rivers of London - initialization done`);
 });

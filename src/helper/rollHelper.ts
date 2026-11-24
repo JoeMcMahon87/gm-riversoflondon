@@ -11,8 +11,10 @@ import OBR from "@owlbear-rodeo/sdk";
 import { v4 as uuidv4 } from "uuid";
 import { rollMessageChannel } from "./variables.ts";
 import { RollLogEntryType, rollLogStore } from "../context/RollLogContext.tsx";
-import { luckOptions, resolveRoll, rollPercentile } from "../rules/roll.ts";
+import { facesAsSource, luckOptions, resolveRoll, rollPercentile } from "../rules/roll.ts";
 import { DiceModifier, SuccessLevel } from "../rules/types.ts";
+import { isDicePlusAvailable, requestDicePlusRoll } from "./dicePlus.ts";
+import { useMetadataContext } from "../context/MetadataContext.ts";
 
 /** What a caller needs to supply to make a roll. */
 export interface RollRequest {
@@ -30,6 +32,12 @@ export interface RollRequest {
     username: string;
     playerId?: string;
 }
+
+/**
+ * A percentile roll needs one tens die and one units die; a bonus or penalty die adds a
+ * second tens die, and the units die is shared between them.
+ */
+const diceNeeded = (modifier: DiceModifier): number => (modifier === "none" ? 2 : 3);
 
 /** How a roll turned out, and what Luck could still do about it. */
 export interface RollOutcome {
@@ -54,7 +62,17 @@ export interface RollOutcome {
 export const makeRoll = async (request: RollRequest): Promise<RollOutcome> => {
     const modifier = request.modifier ?? "none";
     const impaired = request.impaired ?? false;
-    const roll = rollPercentile(modifier);
+
+    // Dice+ renders 3D dice the whole table can watch, but it is a separate extension
+    // that may be absent, busy or slow. Its faces are fed through the same
+    // rollPercentile as a local roll, and any failure falls back to rolling here, so a
+    // missing Dice+ costs the animation and never the roll.
+    const useDicePlus = useMetadataContext.getState().room?.diceRoller === "dice-plus" && isDicePlusAvailable();
+    const faces = useDicePlus
+        ? await requestDicePlusRoll(diceNeeded(modifier), request.label, request.hidden ?? false)
+        : null;
+
+    const roll = faces ? rollPercentile(modifier, facesAsSource(faces)) : rollPercentile(modifier);
     const level = resolveRoll(roll.result, request.target, impaired);
 
     const entry: RollLogEntryType = {

@@ -160,6 +160,16 @@ Click any characteristic or skill to roll against it. Hover the button for modif
 Bonus and penalty dice do not stack. The log shows both candidate results with the
 discarded one struck through.
 
+### 3D dice
+
+Install the [Dice+](https://extensions.owlbear.rodeo/dice-plus) extension in the same
+room, reload this one, then pick **Dice+** under `Settings` → `Dice roller`. Rolls are
+then thrown as physical dice everyone can watch, and this extension resolves the faces
+they land on.
+
+Dice+ is a preference, not a dependency. If it is missing, slow, or errors, the roll
+still happens locally and the result is the same; only the animation is lost.
+
 ## Damage
 
 | Control | Effect |
@@ -197,7 +207,7 @@ prep.
 
 # Roadmap
 
-- [ ] dddice integration, for 3D dice shared with the table
+- [x] Dice+ integration, for 3D dice the whole table can watch
 - [ ] Opposed rolls resolved between two tokens, with the tiebreaker rules
 - [ ] Pushed rolls tracked on the roll, so a failed push prompts its consequence
 - [ ] The Hyperthaumaturgical Degradation POW roll offered directly from a flagged casting

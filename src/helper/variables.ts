@@ -23,6 +23,9 @@ export const modalId = `${ID}/modal`;
 export const rollLogPopoverId = `${ID}/roll-log`;
 export const rollMessageChannel = `${ID}.roll-event`;
 
+/** Whether Dice+ answered a readiness check this session. Written to localStorage. */
+export const dicePlusAvailableKey = `${ID}/dice-plus-available`;
+
 export const version = "0.1.0";
 
 export const changelogModal: Modal = {
@@ -69,6 +72,7 @@ export const rollLogPopover: Popover = {
 export const defaultRoomMetadata: RoomMetadata = {
     ignoreUpdateNotification: false,
     revealSuccessLevel: true,
+    diceRoller: "local",
 };
 
 /**

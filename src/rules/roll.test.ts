@@ -1,14 +1,16 @@
 /** Resolving percentile rolls against a skill or characteristic. */
 
 import { describe, expect, it } from "vitest";
-import { combineDice, compareSuccess, hardThreshold, luckOptions, resolveRoll, rollPercentile } from "./roll.ts";
-import { RandomSource } from "./roll.ts";
-
-/** Feed ``rollPercentile`` a known sequence of die faces, in the order it asks for them. */
-const scriptedDice = (faces: number[]): RandomSource => {
-    let index = 0;
-    return () => faces[index++];
-};
+import {
+    combineDice,
+    compareSuccess,
+    facesAsSource as scriptedDice,
+    hardThreshold,
+    luckOptions,
+    normalizeD10,
+    resolveRoll,
+    rollPercentile,
+} from "./roll.ts";
 
 describe("combining the two dice", () => {
     it("test_double_zero_is_one_hundred_rather_than_zero", () => {
@@ -153,5 +155,39 @@ describe("spending Luck", () => {
 
         expect(options.map((o) => o.level)).toEqual(["hard", "critical"]);
         expect(options[0].cost).toBe(20);
+    });
+});
+
+describe("accepting dice rolled elsewhere", () => {
+    it("test_a_d10_reading_one_to_ten_maps_its_ten_to_a_zero_face", () => {
+        // Dice+ and other rollers disagree about whether a d10 shows 0-9 or 1-10, and
+        // say nothing about which. Reading a ten as a zero is what makes both safe.
+        expect(normalizeD10(10)).toBe(0);
+        expect(normalizeD10(1)).toBe(1);
+        expect(normalizeD10(9)).toBe(9);
+    });
+
+    it("test_a_d10_already_reading_zero_to_nine_passes_through_unchanged", () => {
+        expect(normalizeD10(0)).toBe(0);
+        expect(normalizeD10(7)).toBe(7);
+    });
+
+    it("test_externally_rolled_faces_resolve_exactly_as_locally_rolled_ones", () => {
+        const external = rollPercentile("none", scriptedDice([3, 7]));
+
+        expect(external.result).toBe(37);
+    });
+
+    it("test_an_external_bonus_die_still_compares_results_rather_than_raw_tens", () => {
+        // The same trap as a local roll: 00 with a units of 0 combines to 100, so the
+        // shared implementation has to protect an external roll too.
+        const external = rollPercentile("bonus", scriptedDice([0, 9, 0]));
+
+        expect(external.result).toBe(90);
+    });
+
+    it("test_two_faces_are_enough_for_an_unmodified_roll_and_three_for_a_modified_one", () => {
+        expect(rollPercentile("none", scriptedDice([1, 2])).result).toBe(12);
+        expect(rollPercentile("penalty", scriptedDice([1, 5, 2])).result).toBe(52);
     });
 });

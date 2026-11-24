@@ -42,6 +42,27 @@ export type RandomSource = (max: number) => number;
 export const defaultRandom: RandomSource = (max: number) => Math.floor(Math.random() * max);
 
 /**
+ * Reduce a reported die to a 0-9 face.
+ *
+ * A d10 is read as 0-9 by some rollers and 1-10 by others, and an external roller does
+ * not say which it uses. Taking the value modulo ten is correct for both: a ten becomes
+ * the zero it represents, and every other value is already its own face.
+ */
+export const normalizeD10 = (value: number): number => ((value % 10) + 10) % 10;
+
+/**
+ * Turn a fixed list of die faces into a ``RandomSource``.
+ *
+ * This is what lets dice rolled somewhere else go through exactly the same resolution
+ * as dice rolled here, rather than growing a second implementation of the tens/units
+ * combining and the bonus-die comparison.
+ */
+export const facesAsSource = (faces: readonly number[]): RandomSource => {
+    let index = 0;
+    return () => faces[index++];
+};
+
+/**
  * Combine a tens die and a units die into a 1-100 result.
  *
  * The tens die reads 00-90 and the units die 0-9, so a literal sum would produce a 0

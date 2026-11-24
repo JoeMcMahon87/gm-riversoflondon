@@ -17,6 +17,7 @@ CLAUDE.md is the rules. The reasons are in `docs/design/`.
 | What is stored on a token and how it migrates | `docs/design/storage.md` |
 | What was dropped from gm-daggerheart and why | `docs/design/port.md` |
 | Rules data (skills, spell costs) and copyright | `docs/design/rules-data.md` |
+| Dice+ integration, external rollers | `docs/design/dice.md` |
 
 ## Commands
 
@@ -54,6 +55,11 @@ yarn test:watch         # vitest in watch mode
 
 **Resolution**
 
+- Every roller, local or external, goes through `rollPercentile`. An external roller
+  supplies faces via `facesAsSource`; it never resolves anything itself. A second
+  resolution path is how the two drift.
+- An external roller failing always falls back to a local roll. A table mid-scene needs
+  a number more than it needs the animation.
 - There is no Extreme success. The ladder is Critical, Hard, Regular, Failure, Fumble.
   Do not add a fifth-value tier from Call of Cthulhu 7e.
 - Fumbles are tested before successes. An impaired character rolling 95 against 98 has
@@ -111,6 +117,7 @@ yarn test:watch         # vitest in watch mode
   library exists so the GM enters their own once. Skill *names* are the agreed line.
 - **Tabletop Almanac integration.** It is the upstream author's service and has no
   Rivers of London data.
-- **dddice**, for now. On the roadmap, deliberately after the rules layer settled.
+- **dddice**, for now. Dice+ covers 3D dice without an account; dddice would be a
+  second integration for the same job.
 - **Automatic rules enforcement over GM judgment.** The extension computes and flags; it
   does not block. Casting on an empty pool is labeled, never prevented.

@@ -98,11 +98,22 @@ export interface SceneMetadata {
     openGroups?: string[];
 }
 
+/**
+ * Which roller the table uses.
+ *
+ * ``local`` resolves in this extension with no dice to watch. ``dice-plus`` asks the
+ * Dice+ extension to roll 3D dice everyone can see, and resolves the faces it sends
+ * back. A ``dice-plus`` room still falls back to a local roll whenever Dice+ fails to
+ * answer, so the setting is a preference rather than a dependency.
+ */
+export type DiceRoller = "local" | "dice-plus";
+
 /** Per-room settings shared by everyone at the table. */
 export interface RoomMetadata {
     ignoreUpdateNotification?: boolean;
     /** Show players the level of success on a roll, rather than only the number. */
     revealSuccessLevel?: boolean;
+    diceRoller?: DiceRoller;
 }
 
 /** The subset of an OBR item this extension changes when drawing map attachments. */

@@ -4,6 +4,8 @@ import { modalId } from "../../../helper/variables.ts";
 import { Groups } from "./Groups.tsx";
 import { useMetadataContext } from "../../../context/MetadataContext.ts";
 import { updateRoomMetadata } from "../../../helper/helpers.ts";
+import { isDicePlusAvailable } from "../../../helper/dicePlus.ts";
+import { DiceRoller } from "../../../helper/types.ts";
 
 /**
  * Room and scene settings.
@@ -13,6 +15,7 @@ import { updateRoomMetadata } from "../../../helper/helpers.ts";
  */
 export const Settings = () => {
     const [room, scene] = useMetadataContext(useShallow((state) => [state.room, state.scene]));
+    const dicePlusFound = isDicePlusAvailable();
 
     return (
         <>
@@ -25,6 +28,24 @@ export const Settings = () => {
                     <h3>Room Settings</h3>
                     <span className={"small"}>(Shared across every scene in this room)</span>
                 </div>
+                <div className={"dice-roller setting"}>
+                    Dice roller:
+                    <select
+                        value={room?.diceRoller ?? "local"}
+                        onChange={(e) => updateRoomMetadata(room, { diceRoller: e.currentTarget.value as DiceRoller })}
+                    >
+                        <option value={"local"}>Built in (no dice shown)</option>
+                        <option value={"dice-plus"} disabled={!dicePlusFound}>
+                            Dice+ (3D dice){dicePlusFound ? "" : " \u2014 not detected"}
+                        </option>
+                    </select>
+                </div>
+                {!dicePlusFound ? (
+                    <span className={"small"}>
+                        Dice+ was not detected in this room. Add the Dice+ extension, then reload this one so it can
+                        look again.
+                    </span>
+                ) : null}
                 <div className={"reveal-success setting"}>
                     Show players the level of success, not just the number:
                     <input
